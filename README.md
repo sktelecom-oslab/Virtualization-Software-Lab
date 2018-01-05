@@ -163,6 +163,7 @@ armada를 이용하여 TACO의 openstack 요소들을 kubernetes에 배포하기
 다운로드 받은 ~/apps/armada-manifests/taco-aio-manifest.yaml 파일을 이용하여
  - Openstack에 필요한 인프라인 ceph, ceph-openstack-config, ingress, etcd, rabbitmq, memcached, mariadb, libvirt, openvswitch 차트와
  - OpenStack 서비스인 keystone,  glance,  nova, neutron, cinder, horizon 차트를 배포합니다. 
+
 ceph와 neutron의 value 중에 override가 필요한 값은 --set 옵션으로 추가할 수 있습니다.
 
     armada apply ~/apps/armada-manifests/taco-aio-manifest.yaml \
