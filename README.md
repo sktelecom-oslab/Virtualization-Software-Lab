@@ -10,7 +10,7 @@ TACO v2.0은 SK텔레콤 SW기술원 Virtualization Software Lab에서 개발한
 
 복잡한 과정없이 CentOS나 Ubuntu 가상머신만 있다면 github에서 소스를 다운로드하여 순서대로 따라하면 VM을 만들 수 있는 환경을 설치하고 동작을 확인해 볼 수 있도록 만들어졌습니다.
 
-## 사용되는 open source project
+## 사용되는 Open Source Software Project
 TACO는 OpenStack을 포함한 다양한 오픈소스 소프트웨어 커뮤니티 버전의 소스코드를 기반으로 만들어졌습니다. 기본적으로 Kubespray를 통해 Kubernetes를 배포 및 설치하고 Armada를 통해 Openstack-Helm 프로젝트에 있는 OpenStack chart를 Kubernetes 위에 배포합니다.
 
 ### OpenStack
@@ -18,7 +18,7 @@ IaaS 형태의 클라우드 컴퓨팅 오픈 소스 프로젝트로, 데이터�
 ![enter image description here](https://github.com/sktelecom-oslab/Virtualization-Software-Lab/blob/add-TACO-AIO-Installation/images/openstack.png?raw=true)
 
 ### Openstack-Helm
-Openstack-Helm은 OpenStack의 컨테이너 이미지들을 Helm을 사용하여 Kubernetes상에 구축하고, Self-Healing, Upgrade, 확장등의 라이프 사이클 관리를 할 수 있도록 하는 프로젝트입니다. Openstack-Helm을 통해 사용자나 운영자들은 서로 다른 다양한 환경들에 OpenStack을 구축, 업그레이드, 확장등의 관리를 손쉽게 할 수 있습니다.
+Openstack-Helm은 OpenStack의 컨테이너 이미지들을 Helm을 사용하여 Kubernetes상에 구축하고, Self-Healing, Upgrade, 확장등의 라이프 사이클 관리를 할 수 있도록 하는 프로젝트입니다. Openstack-Helm을 통해 사용자나 운영자들은 서로 다른 다양한 환경들에 OpenStack을 구축, 업그레이드, 확장등의 관리를 손쉽게 할 수 있습니다. 2017년 4월에 OpenStack의 정식 프로젝트가 되었고 저희 랩에서도 많은 코드 기여와 참여를 하고 있습니다.
 
 Openstack-Helm은 OpenStack 구축에 필요한 인프라인 mariadb, memcached, rabbitmq, Kubernetes에 필요한 etcd, 또 OpenStack의 project인 keystone, glance, nova, neutron, cinder 외의 여러가지 서비스 및 프로젝트를 Kubernetes 위에 구축할 수 있는 helm chart를 제공합니다.
 
@@ -48,6 +48,7 @@ Kubernetes는 docker-swarm, marathon 과 같은 container orchestration 툴로 �
 Kubespray는 Ansible 을 사용한 Kubernetes 설치 자동화 도구 입니다. 원격 머신이나 설치 대상노드가 되는 머신에서 배포가 가능하고 Kubernetes가 이미 설치되어 있는 경우에 설치를 수행하면 변동된 사항에 대해서만 업데이트를 실행합니다.
 
 Kubernetes Master Node(etcd, kube-apiserver) 의 High Available(HA) 구성을 할 수 있도록 지원하고 리눅스 대부분 버전(CoreOS, Debian, Ubuntu, Fedora 및 CentOS / RHEL)에서의 설치가 가능합니다. 또한, AWS, GCE, Azure, OpenStack, Baremetal 에서 배포할 수 있습니다.
+
 #### Project Links
  - Kubernetes Project Code:  https://github.com/kubernetes/kubernetes
  - Kubernetes Project Homepage: https://kubernetes.io/
@@ -57,11 +58,12 @@ Kubernetes Master Node(etcd, kube-apiserver) 의 High Available(HA) 구성을 �
 여러 개의 helm 차트를 배포하고 관리하기 위한 툴로, 하나의 Armada yaml 파일로 여러 차트와 관련된 설정들을 관리하며 모든 helm release를 위한 라이프 사이클 훅을 제공합니다. 
 
 Armada는 서버와 클라이언트로 이루어져 있으며, 보통 Armada를 사용한다는 것은 Armada client를 사용하는 것을 의미합니다. Armada client를 이용하기 위해서는 먼저 python3가 필요합니다. Armada client는 grpc를 이용하여 tiller와 통신하며 이를 통해 helm과 관련된 기능을 수행합니다.
+
 #### Project Links
  - Project Code: https://github.com/att-comdev/armada
  - Documentation: http://armada-helm.readthedocs.io/en/latest/index.html
 
-## step by step
+## TACO AIO Step by Step 설치 가이드 
 ### 설치 전 준비사항
 TACO설치를 위해 물리 서버나 VM이 필요합니다. 원활한 작동을 위해 최소한 아래의 요구사항으로 구성하는 것이 좋습니다.
  - OpenStack 설치: 4 CPU / 16G MEMORY /  100G DISK / 1 NIC
@@ -199,3 +201,9 @@ admin의 프로젝트와 사용자에 대한 클라이언트 환경 변수를 �
 Weave Scope는 설치된 TACO 노드의 30162 포트로 접속할 수 있습니다. Weave Scope UI를 통해서 Node, Pod, Container 정보와 서로간의 연결 현황을 확인할 수 있습니다. 브라우저에서 http://localhost:30162   또는  http://<테스트서버아이피>:30162로 접속할 수 있습니다.
 ![enter image description here](https://github.com/sktelecom-oslab/Virtualization-Software-Lab/blob/add-TACO-AIO-Installation/images/Weavescope.png?raw=true)
  - 기본 유저 정보: admin / password
+
+위와 같이 OpenStack을 Container화하여 Kubernetes상에서 배포/운영하기 위한 기본적인 내용들과 저희 Lab에서 만든 간단한 설치 Script에 대해서 설명하였습니다. 이 블로그를 통해서 누구든지 쉽게 Kubernetes를 설치하고 컨테이너화된 OpenStack을 직접 설치해서 사용해 볼 수 있게 되기를 바랍니다. 
+
+앞으로 Kubernetes, Container, OpenStack과 관련된 주제로 계속해서 기술 블로그를 작성해 나갈 예정입니다. 많은 관심 부탁드리겠습니다.
+
+![enter image description here](https://github.com/sktelecom-oslab/Virtualization-Software-Lab/blob/add-TACO-AIO-Installation/images/Weavescope.png?raw=true)
