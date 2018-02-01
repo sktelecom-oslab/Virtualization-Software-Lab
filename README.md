@@ -1,3 +1,4 @@
+
 # TACO All-In-One 설치
 
 ## TACO란
@@ -19,8 +20,7 @@ IaaS 형태의 클라우드 컴퓨팅 오픈 소스 프로젝트로, 데이터�
 ### Openstack-Helm
 Openstack-Helm은 OpenStack의 컨테이너 이미지들을 Helm을 사용하여 Kubernetes상에 구축하고, Self-Healing, Upgrade, 확장등의 라이프 사이클 관리를 할 수 있도록 하는 프로젝트입니다. Openstack-Helm을 통해 사용자나 운영자들은 서로 다른 다양한 환경들에 OpenStack을 구축, 업그레이드, 확장등의 관리를 손쉽게 할 수 있습니다.
 
-Openstack-Helm은 OpenStack 구축에 필요한 인프라인 mariadb, memcached, rabbitmq, Kubernetes에 필요한 etcd, 또 openstack의 project인 keystone, glance, nova, neutron, cinder 외의 여러가지 서비스 및 프로젝트를 Kubernetes 위에 구축할 수 있는 helm chart를 제공합니다.
-
+Openstack-Helm은 OpenStack 구축에 필요한 인프라인 mariadb, memcached, rabbitmq, Kubernetes에 필요한 etcd, 또 OpenStack의 project인 keystone, glance, nova, neutron, cinder 외의 여러가지 서비스 및 프로젝트를 Kubernetes 위에 구축할 수 있는 helm chart를 제공합니다.
 ![enter image description here](https://github.com/sktelecom-oslab/Virtualization-Software-Lab/blob/add-TACO-AIO-Installation/images/helm.png?raw=true)
 
 #### Project Links
@@ -87,7 +87,7 @@ Kubespray(tag v2.3.0)을 사용해 Kubernetes를 설치할 차례입니다. 우�
     git checkout -b v2.3.0 tags/v2.3.0
     pip install -r requirements.txt
     
-TACO에서 권장하는 Kubernetes 설정을 사용하여 kubernetes를 설치하기 위해 Upstream Kubespray 디렉토리를 TACO Kubespray로 덮어씁니다. TACO Kubespray에는 Helm client 설치, Ceph 툴 설치 및 설정 등 TACO에 설치에 추가로 필요한 작업을 자동화 해 주는 기능이 추가되어 있습니다.
+TACO에서 권장하는 Kubernetes 설정을 사용하여 Kubernetes를 설치하기 위해 Upstream Kubespray 디렉토리를 TACO Kubespray로 덮어씁니다. TACO Kubespray에는 Helm client 설치, Ceph 툴 설치 및 설정 등 TACO에 설치에 추가로 필요한 작업을 자동화 해 주는 기능이 추가되어 있습니다.
 
     cd ~/apps
     git clone https://github.com/sktelecom-oslab/taco-kubespray.git && cd taco-kubespray
@@ -108,10 +108,10 @@ Kubernetes 클러스터의 정보가 담긴 inventory 파일을 만듭니다. TA
     [k8s-cluster:children]
     kube-node
     kube-master""" > inventory/taco-aio.cfg
-이제 ansible playbook 명령을 통해 kubernetes를 설치합니다.
+이제 ansible playbook 명령을 통해 Kubernetes를 설치합니다.
 
     ansible-playbook -u root -b -i ~/apps/kubespray/inventory/taco-aio.cfg ~/apps/kubespray/cluster.yml
-Kubernetes 설치가 끝나면 TACO AIO에 필요한 kubernetes 설정인 node label을 지정하고, OpenStack namespace, clusterrolebinding, ceph user 를 생성합니다. 
+Kubernetes 설치가 끝나면 TACO AIO에 필요한 Kubernetes 설정인 node label을 지정하고, OpenStack namespace, clusterrolebinding, ceph user 를 생성합니다. 
 
     kubectl label nodes openstack-control-plane=enabled --all --namespace=openstack --overwrite
     kubectl label nodes openvswitch=enabled --all --namespace=openstack --overwrite
@@ -139,12 +139,12 @@ Kubernetes 설치가 끝나면 TACO AIO에 필요한 kubernetes 설정인 node l
     options ndots:5""" > /etc/resolv.conf
 
 #### 03-init-armada.sh
-armada를 설치하기 위해 armada의 소스코드를 다운로드 받습니다.
+Armada를 설치하기 위해 Armada의 소스코드를 다운로드 받습니다.
 
     cd ~/apps
     git clone http://github.com/att-comdev/armada.git && cd armada
 
-TACO AIO 설치가 가능한 운영체제인지 확인하여, armada에 필요한 모든 python3 패키지를 설치합니다.
+TACO AIO 설치가 가능한 운영체제인지 확인하여, Armada에 필요한 모든 python3 패키지를 설치합니다.
 
     OS_DISTRO=$(cat /etc/os-release | grep "PRETTY_NAME" | sed 's/PRETTY_NAME=//g' | sed 's/["]//g' | awk '{print $1}')
     if [ $OS_DISTRO == Red ]; then
@@ -166,7 +166,7 @@ TACO AIO 설치가 가능한 운영체제인지 확인하여, armada에 필요�
     fi
 
 #### 04-deploy-openstack.sh
-armada를 이용하여 TACO의 openstack 요소들을 kubernetes에 배포하기 위해 armada manifests 파일을 다운로드 받습니다.
+Armada를 이용하여 TACO의 OpenStack 요소들을 Kubernetes에 배포하기 위해 Armada manifests 파일을 다운로드 받습니다.
 
     cd ~/apps
     git clone https://github.com/sktelecom-oslab/armada-manifests.git
@@ -198,4 +198,3 @@ admin의 프로젝트와 사용자에 대한 클라이언트 환경 변수를 �
 Weave Scope는 설치된 TACO 노드의 30162 포트로 접속할 수 있습니다. Weave Scope UI를 통해서 Node, Pod, Container 정보와 서로간의 연결 현황을 확인할 수 있습니다. 브라우저에서 http://localhost:30162   또는  http://<테스트서버아이피>:30162로 접속할 수 있습니다.
 ![enter image description here](https://github.com/sktelecom-oslab/Virtualization-Software-Lab/blob/add-TACO-AIO-Installation/images/Weavescope.png?raw=true)
  - 기본 유저 정보: admin / password
- 
