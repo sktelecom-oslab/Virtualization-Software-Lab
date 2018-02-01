@@ -1,5 +1,7 @@
-
 # TACO All-In-One 설치
+
+## Introduction
+Sk Telecom Virtualization Software Lab에서 기술블로그를 시작합니다. 첫번째 주제로 TACO All-In-One 설치에 대해서 설명 드리겠습니다.
 
 ## TACO란
 TACO v2.0은 SK텔레콤 SW기술원 Virtualization Software Lab에서 개발한 최신의 OpenStack기반 클라우드 인프라 플랫폼입니다. OpenStack을 컨테이너화 하여 Kubernetes 상에 설치함으로써 기존의 OpenStack이 가진 복잡성을 탈피하고자 하였습니다. **OpenStack Ocata** 버전을 기반으로 하여 설정이나 소프트웨어상의 변경에 대한 자동 테스트 (기능 및 HA 안정성 테스트 자동화) 및 자동 패키징 기능을 통해 안정적인 OpenStack 패키지를 제공합니다. 또한 **Kubernetes** 를 통해 Simple Installation, 서비스무중단 업데이트/업그레이드, 장애 자동복구 (Self-Healing), 높은 가용성 보장, 모니터링 등의 OpenStack Control Plane 라이프사이클 관리 기능도 제공합니다.
@@ -31,7 +33,7 @@ Openstack-Helm은 OpenStack 구축에 필요한 인프라인 mariadb, memcached,
 ### Kubernetes with Kubespray
 
 #### Kubernetes
-Kubernetes는 docker-swarm, marathon 과 같은 container orchestration 툴로 컨테이너를 배포/관리하는 오픈 소스 플랫폼으로서, 클러스터링 된 호스트들에 애플리케이션 컨테이너의 배포, 확장 및 운영을 자동화하며, 멀티 테넌트(Multi-tenant)인프라를 제공합니다. Kubernetes는 서버 수준에서의 컴퓨팅, 네트워크 및 스토리지 인프라에 대한 부담을 줄이고 애플리케이션 운영자와 개발자가 서비스 운영을 위해 전적으로 container-centric에 초점을 맞출 수 있도록 하는 것을 목표로 합니다.
+Kubernetes는 docker-swarm, marathon과 유사하게 컨테이너를 배포/관리하는 오픈 소스 container orchestration 플랫폼으로서, 클러스터링 된 호스트들에 애플리케이션 컨테이너의 배포, 확장 및 운영을 자동화하며, 멀티 테넌트(Multi-tenant)인프라를 제공합니다. Kubernetes는 서버 수준에서의 컴퓨팅, 네트워크 및 스토리지 인프라에 대한 부담을 줄이고 애플리케이션 운영자와 개발자가 서비스 운영을 위해 전적으로 container-centric에 초점을 맞출 수 있도록 하는 것을 목표로 합니다.
 
 기존에 container를 사용하던 host 머신 한 대로 구성된 환경이라면, docker run 이나 docker-compose 등으로 container 를 실행해도 아무런 문제가 없지만,  사용자가 많아지면서 하나의 host 에서 모든 container 를 실행할 수 없는 경우가 생겨납니다. 여러 대의 host에 container를 실행하기 위해서는 inter-host container 네트워킹과 host machine 의 리소스에 따른 container 분배 등을 고려해야 합니다. 이를 위해 container orchestration 툴들이 개발되는데, 이 중 하나가 Kubernetes 입니다. 
 
@@ -54,8 +56,15 @@ Kubernetes Master Node(etcd, kube-apiserver) 의 High Available(HA) 구성을 �
  - Kubernetes Project Homepage: https://kubernetes.io/
  - Kubespray Project Code: https://github.com/kubernetes-incubator/kubespray
 
+### Helm
+Helm는 Kubernetes 애플리케이션을 관리하는 도구로서, Kubernetes 애플리케이션을 정의, 설치 및 업그레이드 할 수 있는 chart를 만들고 관리하는 패키지 매니저입니다. 
+
+#### Project Links
+ - Project Code: https://github.com/kubernetes/helm, https://github.com/kubernetes/charts
+ - Documentation: https://docs.helm.sh
+
 ### Armada
-여러 개의 helm 차트를 배포하고 관리하기 위한 툴로, 하나의 Armada yaml 파일로 여러 차트와 관련된 설정들을 관리하며 모든 helm release를 위한 라이프 사이클 훅을 제공합니다. 
+여러 개의 helm 차트를 배포하고 관리하기 위한 툴로, 하나의 Armada yaml 파일로 여러 차트와 관련된 설정들을 관리하며 모든 helm release를 위한 라이프 사이클 훅을 제공합니다. chart 작성 표준에 맞춰서 chart를 작성한 후 repository에 넣어서 관리하고 Kubernetes에 배포할 수 있습니다.
 
 Armada는 서버와 클라이언트로 이루어져 있으며, 보통 Armada를 사용한다는 것은 Armada client를 사용하는 것을 의미합니다. Armada client를 이용하기 위해서는 먼저 python3가 필요합니다. Armada client는 grpc를 이용하여 tiller와 통신하며 이를 통해 helm과 관련된 기능을 수행합니다.
 
@@ -207,5 +216,3 @@ Weave Scope는 설치된 TACO 노드의 30162 포트로 접속할 수 있습니�
 위와 같이 OpenStack을 Container화하여 Kubernetes상에서 배포/운영하기 위한 기본적인 내용들과 저희 Lab에서 만든 간단한 설치 Script에 대해서 설명하였습니다. 이 블로그를 통해서 누구든지 쉽게 Kubernetes를 설치하고 컨테이너화된 OpenStack을 직접 설치해서 사용해 볼 수 있게 되기를 바랍니다. 
 
 앞으로 Kubernetes, Container, OpenStack과 관련된 주제로 계속해서 기술 블로그를 작성해 나갈 예정입니다. 많은 관심 부탁드리겠습니다.
-
-
