@@ -201,9 +201,11 @@ admin의 프로젝트와 사용자에 대한 클라이언트 환경 변수를 �
 Weave Scope는 설치된 TACO 노드의 30162 포트로 접속할 수 있습니다. Weave Scope UI를 통해서 Node, Pod, Container 정보와 서로간의 연결 현황을 확인할 수 있습니다. 브라우저에서 http://localhost:30162   또는  http://<테스트서버아이피>:30162로 접속할 수 있습니다.
 ![enter image description here](https://github.com/sktelecom-oslab/Virtualization-Software-Lab/blob/add-TACO-AIO-Installation/images/Weavescope.png?raw=true)
  - 기본 유저 정보: admin / password
+ 
+ ![enter image description here](https://github.com/sktelecom-oslab/Virtualization-Software-Lab/blob/add-TACO-AIO-Installation/images/Weavescope.png?raw=true)
 
 위와 같이 OpenStack을 Container화하여 Kubernetes상에서 배포/운영하기 위한 기본적인 내용들과 저희 Lab에서 만든 간단한 설치 Script에 대해서 설명하였습니다. 이 블로그를 통해서 누구든지 쉽게 Kubernetes를 설치하고 컨테이너화된 OpenStack을 직접 설치해서 사용해 볼 수 있게 되기를 바랍니다. 
 
 앞으로 Kubernetes, Container, OpenStack과 관련된 주제로 계속해서 기술 블로그를 작성해 나갈 예정입니다. 많은 관심 부탁드리겠습니다.
 
-![enter image description here](https://github.com/sktelecom-oslab/Virtualization-Software-Lab/blob/add-TACO-AIO-Installation/images/Weavescope.png?raw=true)
+
