@@ -21,6 +21,7 @@ IaaS 형태의 클라우드 컴퓨팅 오픈 소스 프로젝트로, 데이터�
 Openstack-Helm은 OpenStack의 컨테이너 이미지들을 Helm을 사용하여 Kubernetes상에 구축하고, Self-Healing, Upgrade, 확장등의 라이프 사이클 관리를 할 수 있도록 하는 프로젝트입니다. Openstack-Helm을 통해 사용자나 운영자들은 서로 다른 다양한 환경들에 OpenStack을 구축, 업그레이드, 확장등의 관리를 손쉽게 할 수 있습니다.
 
 Openstack-Helm은 OpenStack 구축에 필요한 인프라인 mariadb, memcached, rabbitmq, Kubernetes에 필요한 etcd, 또 OpenStack의 project인 keystone, glance, nova, neutron, cinder 외의 여러가지 서비스 및 프로젝트를 Kubernetes 위에 구축할 수 있는 helm chart를 제공합니다.
+
 ![enter image description here](https://github.com/sktelecom-oslab/Virtualization-Software-Lab/blob/add-TACO-AIO-Installation/images/helm.png?raw=true)
 
 #### Project Links
