@@ -76,7 +76,6 @@ Armada는 서버와 클라이언트로 이루어져 있으며, 보통 Armada를 
 ### 설치 전 준비사항
 TACO설치를 위해 물리 서버나 VM이 필요합니다. 원활한 작동을 위해 최소한 아래의 요구사항으로 구성하는 것이 좋습니다.
  - OpenStack 설치: 4 CPU / 16G MEMORY /  100G DISK / 1 NIC
- - OpenStack + Monitoring & Logging 설치: 4 CPU / 32G MEMORY /  500G DISK / 1 NIC
  - Ubuntu 16.04 LTS OR CentOS 7.4 OR RHEL 7.4
 
 
