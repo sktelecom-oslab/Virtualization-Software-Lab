@@ -17,6 +17,7 @@ TACO는 OpenStack을 포함한 다양한 오픈소스 소프트웨어 커뮤니�
 
 ### OpenStack
 IaaS 형태의 클라우드 컴퓨팅 오픈 소스 프로젝트로, 데이터센터의 인프라인 compute, storage, network 리소스들을 제공하고 제어하는 클라우드 오퍼레이팅 시스템입니다.
+
 ![OpenStack](https://github.com/sktelecom-oslab/Virtualization-Software-Lab/blob/add-TACO-AIO-Installation/images/openstack.png?raw=true)
 
 ### Openstack-Helm
@@ -37,7 +38,7 @@ Kubernetes는 docker-swarm, marathon과 유사하게 컨테이너를 배포/관�
 
 기존에 container를 사용하던 host 머신 한 대로 구성된 환경이라면, docker run 이나 docker-compose 등으로 container 를 실행해도 아무런 문제가 없지만,  사용자가 많아지면서 하나의 host 에서 모든 container 를 실행할 수 없는 경우가 생겨납니다. 여러 대의 host에 container를 실행하기 위해서는 inter-host container 네트워킹과 host machine 의 리소스에 따른 container 분배 등을 고려해야 합니다. 이를 위해 container orchestration 툴들이 개발되는데, 이 중 하나가 Kubernetes 입니다. 
 
-![enter image description here](https://github.com/sktelecom-oslab/Virtualization-Software-Lab/blob/add-TACO-AIO-Installation/images/k8s-overview.png?raw=true)
+![Kubernetes](https://github.com/sktelecom-oslab/Virtualization-Software-Lab/blob/add-TACO-AIO-Installation/images/k8s-overview.png?raw=true)
 
 대표적으로 Kubernetes가 하는 일은
 
@@ -205,14 +206,15 @@ admin의 프로젝트와 사용자에 대한 클라이언트 환경 변수를 �
 먼저 horizon의 경우, 웹 브라우저에서 테스트 서버의 IP로 접속하여 horizon에 접속할 수 있습니다. VM을 사용하는 경우에는 접속환경의 /etc/hosts 파일에 <테스트서버IP> horizon, horizon.openstack 을 추가하면, 브라우저에서 http://horizon,  http://horizon.openstack 으로 접속할 수 있습니다.
 
  - 기본 유저 정보: admin / password
-![enter image description here](https://github.com/sktelecom-oslab/Virtualization-Software-Lab/blob/add-TACO-AIO-Installation/images/openstack-dashboard.png?raw=true)
+ 
+![openstack dashboard](https://github.com/sktelecom-oslab/Virtualization-Software-Lab/blob/add-TACO-AIO-Installation/images/openstack-dashboard.png?raw=true)
 
 
 Weave Scope는 설치된 TACO 노드의 30162 포트로 접속할 수 있습니다. Weave Scope UI를 통해서 Node, Pod, Container 정보와 서로간의 연결 현황을 확인할 수 있습니다. 브라우저에서 http://localhost:30162   또는  http://<테스트서버아이피>:30162로 접속할 수 있습니다.
 ![enter image description here](https://github.com/sktelecom-oslab/Virtualization-Software-Lab/blob/add-TACO-AIO-Installation/images/Weavescope.png?raw=true)
  - 기본 유저 정보: admin / password
  
- ![enter image description here](https://github.com/sktelecom-oslab/Virtualization-Software-Lab/blob/add-TACO-AIO-Installation/images/Weavescope.png?raw=true)
+ ![weavescope ui](https://github.com/sktelecom-oslab/Virtualization-Software-Lab/blob/add-TACO-AIO-Installation/images/Weavescope.png?raw=true)
 
 위와 같이 OpenStack을 Container화하여 Kubernetes상에서 배포/운영하기 위한 기본적인 내용들과 저희 Lab에서 만든 간단한 설치 Script에 대해서 설명하였습니다. 이 블로그를 통해서 누구든지 쉽게 Kubernetes를 설치하고 컨테이너화된 OpenStack을 직접 설치해서 사용해 볼 수 있게 되기를 바랍니다. 
 
