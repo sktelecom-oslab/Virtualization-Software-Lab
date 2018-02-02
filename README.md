@@ -28,7 +28,7 @@ Openstack-Helm은 OpenStack 구축에 필요한 인프라인 mariadb, memcached,
 
 #### Project Links
 - [OpenStack-Helm] Project Code: https://github.com/openstack/openstack-helm
-- [OpenStack-Helm Document] Documentation: http://openstack-helm.readthedocs.io/en/latest/
+- [OpenStack-Helm Documentation]: http://openstack-helm.readthedocs.io/en/latest/
 
 ### Kubernetes with Kubespray
 
@@ -52,7 +52,7 @@ Kubespray는 Ansible 을 사용한 Kubernetes 설치 자동화 도구 입니다.
 Kubernetes Master Node(etcd, kube-apiserver) 의 High Available(HA) 구성을 할 수 있도록 지원하고 리눅스 대부분 버전(CoreOS, Debian, Ubuntu, Fedora 및 CentOS / RHEL)에서의 설치가 가능합니다. 또한, AWS, GCE, Azure, OpenStack, Baremetal 에서 배포할 수 있습니다.
 
 #### Project Links
- - Kubernetes Project Code:  https://github.com/kubernetes/kubernetes
+ - Kubernetes Project Code:  <https://github.com/kubernetes/kubernetes>
  - Kubernetes Project Homepage: https://kubernetes.io/
  - Kubespray Project Code: https://github.com/kubernetes-incubator/kubespray
 
@@ -219,6 +219,5 @@ Weave Scope는 설치된 TACO 노드의 30162 포트로 접속할 수 있습니�
 
 
 [OpenStack-Helm]: https://github.com/openstack/openstack-helm
-[OpenStack-Helm Document]: https://docs.openstack.org/openstack-helm/latest/readme.html
-[OpenStack Sydney Workshop]: https://github.com/portdirect/sydney-workshop
+[OpenStack-Helm Documentation]: https://docs.openstack.org/openstack-helm/latest/readme.html
 [Armada]: http://armada-helm.readthedocs.io/en/latest/readme.html#
