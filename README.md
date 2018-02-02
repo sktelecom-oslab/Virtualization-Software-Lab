@@ -1,4 +1,4 @@
-# TACO All-In-One 설치 by 
+# TACO All-In-One 설치 by 김시리
 
 ## Introduction
 Sk Telecom Virtualization Software Lab에서 기술블로그를 시작합니다. 첫번째 주제로 TACO All-In-One 설치에 대해서 설명 드리겠습니다.
