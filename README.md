@@ -18,7 +18,7 @@ TACO는 OpenStack을 포함한 다양한 오픈소스 소프트웨어 커뮤니�
 ### OpenStack
 IaaS 형태의 클라우드 컴퓨팅 오픈 소스 프로젝트로, 데이터센터의 인프라인 compute, storage, network 리소스들을 제공하고 제어하는 클라우드 오퍼레이팅 시스템입니다.
 
-![OpenStack](https://github.com/sktelecom-oslab/Virtualization-Software-Lab/blob/add-TACO-AIO-Installation/images/openstack.png?raw=true)
+![OpenStack](/images/openstack.png)
 
 ### Openstack-Helm
 Openstack-Helm은 OpenStack의 컨테이너 이미지들을 Helm을 사용하여 Kubernetes상에 구축하고, Self-Healing, Upgrade, 확장등의 라이프 사이클 관리를 할 수 있도록 하는 프로젝트입니다. Openstack-Helm을 통해 사용자나 운영자들은 서로 다른 다양한 환경들에 OpenStack을 구축, 업그레이드, 확장등의 관리를 손쉽게 할 수 있습니다. 2017년 4월에 OpenStack의 정식 프로젝트가 되었고 저희 랩에서도 많은 코드 기여와 참여를 하고 있습니다.
