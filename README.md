@@ -25,7 +25,7 @@ Openstack-Helm은 OpenStack의 컨테이너 이미지들을 Helm을 사용하여
 
 Openstack-Helm은 OpenStack 구축에 필요한 인프라인 mariadb, memcached, rabbitmq, Kubernetes에 필요한 etcd, 또 OpenStack의 project인 keystone, glance, nova, neutron, cinder 외의 여러가지 서비스 및 프로젝트를 Kubernetes 위에 구축할 수 있는 helm chart를 제공합니다.
 
-![OpeneStack-Helm](https://github.com/sktelecom-oslab/Virtualization-Software-Lab/blob/add-TACO-AIO-Installation/images/helm.png?raw=true)
+![OpeneStack-Helm](/images/helm.png)
 
 #### Project Links
 - [OpenStack-Helm] Project Code: <https://github.com/openstack/openstack-helm>
@@ -38,7 +38,7 @@ Kubernetes는 docker-swarm, marathon과 유사하게 컨테이너를 배포/관�
 
 기존에 container를 사용하던 host 머신 한 대로 구성된 환경이라면, docker run 이나 docker-compose 등으로 container 를 실행해도 아무런 문제가 없지만,  사용자가 많아지면서 하나의 host 에서 모든 container 를 실행할 수 없는 경우가 생겨납니다. 여러 대의 host에 container를 실행하기 위해서는 inter-host container 네트워킹과 host machine 의 리소스에 따른 container 분배 등을 고려해야 합니다. 이를 위해 container orchestration 툴들이 개발되는데, 이 중 하나가 Kubernetes 입니다. 
 
-![Kubernetes](https://github.com/sktelecom-oslab/Virtualization-Software-Lab/blob/add-TACO-AIO-Installation/images/k8s-overview.png?raw=true)
+![Kubernetes](/images/k8s-overview.png)
 
 대표적으로 Kubernetes가 하는 일은
 
