@@ -207,11 +207,10 @@ admin의 프로젝트와 사용자에 대한 클라이언트 환경 변수를 �
 
  - 기본 유저 정보: admin / password
  
-![openstack dashboard](https://github.com/sktelecom-oslab/Virtualization-Software-Lab/blob/add-TACO-AIO-Installation/images/openstack-dashboard.png?raw=true)
+![openstack dashboard](/images/openstack-dashboard.png)
 
 
 Weave Scope는 설치된 TACO 노드의 30162 포트로 접속할 수 있습니다. Weave Scope UI를 통해서 Node, Pod, Container 정보와 서로간의 연결 현황을 확인할 수 있습니다. 브라우저에서 http://localhost:30162   또는  http://<테스트서버아이피>:30162로 접속할 수 있습니다.
-![enter image description here](/images/Weavescope.png)
  - 기본 유저 정보: admin / password
  
  ![weavescope ui](/images/Weavescope.png)
