@@ -28,7 +28,7 @@ Openstack-Helm은 OpenStack 구축에 필요한 인프라인 mariadb, memcached,
 
 #### Project Links
 - [OpenStack-Helm] Project Code: <https://github.com/openstack/openstack-helm>
-- [OpenStack-Helm Documentation]: <https://docs.openstack.org/openstack-helm/latest/readme.html>
+- OpenStack-Helm Documentation: <https://docs.openstack.org/openstack-helm/latest/readme.html>
 
 ### Kubernetes with Kubespray
 
