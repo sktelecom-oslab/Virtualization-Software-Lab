@@ -80,7 +80,8 @@ TACO설치를 위해 물리 서버나 VM이 필요합니다. 원활한 작동을
 
 
 ### TACO Script 다운로드
-TACO Installation Scripts를 다운 받습니다.
+TACO Installation Scripts를 다운 받습니다. 
+(현재 버전의 TACO AIO script에서는 설치의 간편성을 위하여 "root" 로 스트립들을 실행시키도록 되어 있습니다.)
 
     $ git clone https://github.com/sktelecom-oslab/taco-scripts.git
     $ cd taco-scripts
