@@ -27,8 +27,8 @@ Openstack-Helm은 OpenStack 구축에 필요한 인프라인 mariadb, memcached,
 ![enter image description here](https://github.com/sktelecom-oslab/Virtualization-Software-Lab/blob/add-TACO-AIO-Installation/images/helm.png?raw=true)
 
 #### Project Links
-- [OpenStack-Helm] Project Code: https://github.com/openstack/openstack-helm
-- [OpenStack-Helm Documentation]: http://openstack-helm.readthedocs.io/en/latest/
+- [OpenStack-Helm] Project Code: <https://github.com/openstack/openstack-helm>
+- [OpenStack-Helm Documentation]: <https://docs.openstack.org/openstack-helm/latest/readme.html>
 
 ### Kubernetes with Kubespray
 
@@ -53,15 +53,15 @@ Kubernetes Master Node(etcd, kube-apiserver) 의 High Available(HA) 구성을 �
 
 #### Project Links
  - Kubernetes Project Code:  <https://github.com/kubernetes/kubernetes>
- - Kubernetes Project Homepage: https://kubernetes.io/
- - Kubespray Project Code: https://github.com/kubernetes-incubator/kubespray
+ - Kubernetes Project Homepage: <https://kubernetes.io/>
+ - Kubespray Project Code: <https://github.com/kubernetes-incubator/kubespray>
 
 ### Helm
 Helm는 Kubernetes 애플리케이션을 관리하는 도구로서, Kubernetes 애플리케이션을 정의, 설치 및 업그레이드 할 수 있는 chart를 만들고 관리하는 패키지 매니저입니다. 
 
 #### Project Links
- - Project Code: https://github.com/kubernetes/helm, https://github.com/kubernetes/charts
- - Documentation: https://docs.helm.sh
+ - Project Code: <https://github.com/kubernetes/helm>, <https://github.com/kubernetes/charts>
+ - Documentation: <https://docs.helm.sh>
 
 ### Armada
 여러 개의 helm 차트를 배포하고 관리하기 위한 툴로, 하나의 Armada yaml 파일로 여러 차트와 관련된 설정들을 관리하며 모든 helm release를 위한 라이프 사이클 훅을 제공합니다. chart 작성 표준에 맞춰서 chart를 작성한 후 repository에 넣어서 관리하고 Kubernetes에 배포할 수 있습니다.
@@ -69,15 +69,16 @@ Helm는 Kubernetes 애플리케이션을 관리하는 도구로서, Kubernetes �
 Armada는 서버와 클라이언트로 이루어져 있으며, 보통 Armada를 사용한다는 것은 Armada client를 사용하는 것을 의미합니다. Armada client를 이용하기 위해서는 먼저 python3가 필요합니다. Armada client는 grpc를 이용하여 tiller와 통신하며 이를 통해 helm과 관련된 기능을 수행합니다.
 
 #### Project Links
- - Project Code: https://github.com/att-comdev/armada
- - Documentation: http://armada-helm.readthedocs.io/en/latest/index.html
+ - Project Code: <https://github.com/att-comdev/armada>
+ - Documentation: <http://armada-helm.readthedocs.io/en/latest/index.html>
 
 ## TACO AIO Step by Step 설치 가이드 
+참고 링크: <https://github.com/sktelecom-oslab/taco-scripts>
+
 ### 설치 전 준비사항
 TACO설치를 위해 물리 서버나 VM이 필요합니다. 원활한 작동을 위해 최소한 아래의 요구사항으로 구성하는 것이 좋습니다.
  - OpenStack 설치: 4 CPU / 16G MEMORY /  100G DISK / 1 NIC
  - Ubuntu 16.04 LTS OR CentOS 7.4 OR RHEL 7.4
-
 
 ### TACO Script 다운로드
 TACO Installation Scripts를 다운 받습니다. 
@@ -220,4 +221,3 @@ Weave Scope는 설치된 TACO 노드의 30162 포트로 접속할 수 있습니�
 
 [OpenStack-Helm]: https://github.com/openstack/openstack-helm
 [OpenStack-Helm Documentation]: https://docs.openstack.org/openstack-helm/latest/readme.html
-[Armada]: http://armada-helm.readthedocs.io/en/latest/readme.html#
