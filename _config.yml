@@ -1,1 +1,34 @@
-theme: jekyll-theme-cayman
+title: Hello, world! I'm David Freeman
+description: > # this means to ignore newlines until "baseurl:"
+  Write an awesome description for your new site here. You can edit this
+  line in _config.yml. It will appear in your document head meta (for
+  Google search results) and in your feed.xml site description.
+permalink: ':title/'
+baseurl: "/Virtualization-Software-Lab" # the subpath of your site, e.g. /blog
+url: "" # the base hostname & protocol for your site, e.g. http://example.com
+site-twitter: #if your site has a twitter account, enter it here
+
+# Author Settings
+author: Virtualization SW Lab & SW COE
+author-img: vslab.jpg # add your photo
+about-author: 안녕하세요. 이 블로그는 SK텔레콤의 Virtualization Software Lab에서 운영하는 블로그입니다.
+social-github: sktelecom-oslab # add your Github handle
+social-email: jay.ahn@sk.com# add your Email address
+
+# Disqus
+discus-identifier: mr-brown # add your discus identifier
+
+# Tracker
+analytics: # Google Analytics
+
+# Build Settings
+markdown: kramdown
+plugins:
+  - jekyll-sitemap
+  - jekyll-paginate
+  - jemoji
+
+paginate: 8
+paginate_path: "/page/:num"
+
+exclude: ["node_modules", "gulpfile.js", "package.json", "yarn.lock"]
