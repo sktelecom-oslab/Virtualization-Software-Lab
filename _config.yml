@@ -11,7 +11,7 @@ author: Virtualization SW Lab & SW COE
 author-img: vslab.jpg # add your photo
 about-author: 안녕하세요. 이 블로그는 SK텔레콤의 Virtualization Software Lab에서 운영하는 블로그입니다.
 social-github: sktelecom-oslab # add your Github handle
-social-email: jay.ahn@sk.com# add your Email address
+social-email: jay.ahn@sk.com # add your Email address
 
 # Disqus
 discus-identifier: openstack # add your discus identifier
