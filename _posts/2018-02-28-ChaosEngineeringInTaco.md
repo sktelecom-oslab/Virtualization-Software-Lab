@@ -127,7 +127,7 @@ start initiated
 
  cookiemonster pod의 로그를 확인합니다. 30초마다 랜덤하게 deployment를 파괴시키고 있습니다.
 
-~~~ bash
+~~~ 
 taco@ctrl01-stg:~$ kubectl logs cookiemonster-7dfdf5d77d-blscj -n cookiemonster -f
 2018/02/28 04:27:49 checking directory:  /cookies.d
 2018/02/28 04:27:49 checking directory:  /etc/cookies.d
