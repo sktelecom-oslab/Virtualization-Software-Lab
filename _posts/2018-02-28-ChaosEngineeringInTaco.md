@@ -26,7 +26,7 @@ author: "이재상"
  위 그림은 내부에 구축한 CI/CD Pipeline에 대한 구성도입니다. Openstack Container 빌드 혹은 Helm Chart 빌드 때마다 그림에 표시된 "Integration Test"단계에서 아래에서 설명할 장애테스트를 수행하여 TACO 서비스의 안정성을 검증하고 있습니다. 이 글에서는 TACO에서 사용하는 장애 발생 툴인 Cookiemonster와 장애 테스트에 대해 설명합니다. TACO CI/CD에 대해서는 따로 포스트를 작성할 예정입니다.
 
 ## Kubernetes 구조
- TACO는 Kubernetes위에 구축된 Openstack 서비스로 TACO를 알기 위해서는 Kubernetes의 이해가 필요합니다. Kubernetes의 대한 내용은 [이전 글]({{ site.baseurl }}{{ post.url }}/Taco/#kubernetes)을 참고하시기 바랍니다.
+ TACO는 Kubernetes위에 구축된 OpenStack 서비스로 TACO를 알기 위해서는 Kubernetes의 이해가 필요합니다. Kubernetes의 대한 내용은 [이전 글]({{ site.baseurl }}{{ post.url }}/Taco/#kubernetes)을 참고하시기 바랍니다.
 
 ## 장애 발생 툴
  Kubernetes환경에서 사용하는 장애 발생 툴은 여러가지가 있습니다. 대부분 넷플릭스의 카오스몽키의 영감을 갖고 만들어졌으며, 각자 Kubernetes 환경에 대한 장애를 발생시킵니다.
@@ -127,7 +127,7 @@ start initiated
 
  cookiemonster pod의 로그를 확인합니다. 30초마다 랜덤하게 deployment를 파괴시키고 있습니다.
 
-~~~ 
+~~~
 taco@ctrl01-stg:~$ kubectl logs cookiemonster-7dfdf5d77d-blscj -n cookiemonster -f
 2018/02/28 04:27:49 checking directory:  /cookies.d
 2018/02/28 04:27:49 checking directory:  /etc/cookies.d
@@ -170,10 +170,10 @@ taco@ctrl01-stg:~$ kubectl logs cookiemonster-7dfdf5d77d-blscj -n cookiemonster 
 ## 장애테스트 방법
  TACO CI/CD의 장애테스트는 다음의 구조로 실행됩니다. Cookiemonster를 통해 장애를 발생시키고 Rally를 통해 검증하는 방식입니다.
 
-* 배포 - Openstack 서비스를 분산 구조로 배포
-* Cookiemonster 설치/실행 - Openstack 서비스 장애 발생
-* Rally 테스트 실행 - Openstack 서비스의 정상작동 확인
-* Cookiemonster 중단 - Openstack 서비스 장애 중단
+* 배포 - OpenStack 서비스를 분산 구조로 배포
+* Cookiemonster 설치/실행 - OpenStack 서비스 장애 발생
+* Rally 테스트 실행 - OpenStack 서비스의 정상작동 확인
+* Cookiemonster 중단 - OpenStack 서비스 장애 중단
 
 ![장애테스트 Pipeline]({{ site.baseurl }}{{ post.url }}/assets/img/cookiemonster/hatest.png)
 [![License: CC BY-NC-ND 4.0](https://licensebuttons.net/l/by-nc-nd/4.0/80x15.png)](https://creativecommons.org/licenses/by-nc-nd/4.0/)
