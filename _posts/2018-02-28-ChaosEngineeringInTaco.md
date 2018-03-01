@@ -23,7 +23,7 @@ author: "이재상"
 ![TACO CI/CD]({{ site.baseurl }}{{ post.url }}/assets/img/cookiemonster/taco-cicd.png)
 [![License: CC BY-NC-ND 4.0](https://licensebuttons.net/l/by-nc-nd/4.0/80x15.png)](https://creativecommons.org/licenses/by-nc-nd/4.0/)
 
- 위 그림은 내부에 구축한 CI/CD Pipeline에 대한 구성도입니다. Openstack Container 빌드 혹은 Helm Chart 빌드 때마다 그림에 표시된 "Integration Test"단계에서 아래에서 설명할 장애테스트를 수행하여 TACO 서비스의 안정성을 검증하고 있습니다. 이 글에서는 TACO에서 사용하는 장애 발생 툴인 Cookiemonster와 장애 테스트에 대해 설명합니다. TACO CI/CD에 대해서는 따로 포스트를 작성할 예정입니다.
+ 위 그림은 내부에 구축한 CI/CD Pipeline에 대한 구성도입니다. OpenStack Container 빌드 혹은 Helm Chart 빌드 때마다 그림에 표시된 "Integration Test"단계에서 아래에서 설명할 장애테스트를 수행하여 TACO 서비스의 안정성을 검증하고 있습니다. 이 글에서는 TACO에서 사용하는 장애 발생 툴인 Cookiemonster와 장애 테스트에 대해 설명합니다. TACO CI/CD에 대해서는 따로 포스트를 작성할 예정입니다.
 
 ## Kubernetes 구조
  TACO는 Kubernetes위에 구축된 OpenStack 서비스로 TACO를 알기 위해서는 Kubernetes의 이해가 필요합니다. Kubernetes의 대한 내용은 [이전 글]({{ site.baseurl }}{{ post.url }}/Taco/#kubernetes)을 참고하시기 바랍니다.
@@ -42,9 +42,10 @@ author: "이재상"
 | powerfulseal  | https://github.com/bloomberg/powerfulseal | Command Line      |
 
 ## Cookiemonster
- Cookiemonster는 SKT에서 개발한 Apache 2.0 라이센스의 오픈소스 프로젝트로 TACO의 CI/CD에서 사용하고 있는 Kubernetes용 장애발생툴입니다. Cookiemonster pod와 worker pod으로 구성되며 다음 역할을 수행합니다.
-  - Project Code: <https://github.com/sktelecom-oslab/cookiemonster>
+ Cookiemonster는 SKT에서 개발한 Apache 2.0 라이센스의 오픈소스 프로젝트로 TACO의 CI/CD에서 사용하고 있는 Kubernetes용 장애발생툴입니다. 또한, 구축된 TACO에 대한 장애테스트 용도로도 사용할 수 있습니다.
+   - Project Code: <https://github.com/sktelecom-oslab/cookiemonster>
 
+ 아래 구성도에 표시된 것 처럼 Cookiemonster pod와 worker pod으로 구성되며 다음 역할을 수행합니다.
 ![Cookiemonster 구성]({{ site.baseurl }}{{ post.url }}/assets/img/cookiemonster/cookiemonster.png)
 [![License: CC BY-NC-ND 4.0](https://licensebuttons.net/l/by-nc-nd/4.0/80x15.png)](https://creativecommons.org/licenses/by-nc-nd/4.0/)
 - Cookiemonster pod: REST API 서버, 외부로부터 요청을 받고 worker pod과 통신
