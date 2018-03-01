@@ -9,16 +9,16 @@ author: "이재상"
 
 ## Overview
  보통 서비스 및 소프트웨어를 개발하는 경우, 최초에 기능 검증을 하거나 빠르게 개발하기 위해 하나의 서버에 모든 기능을 구현합니다. 그러나 서비스 규모가 증가한다던가 혹은 서비스 요청이 무척 많아질 것을 대비하려면 서버 한대로는 원하는 것을 이룰 수 없겠죠. 이에 서비스를 분산 배포하기 시작합니다. 예를 들어 소규모 서비스일 때는 DB서버 1대만 구축하지만, 서비스 리퀘스트가 증가한다면 복수의 DB서버로 클러스터링을 구성하는 식입니다. 이렇게 증가되는 서비스는 DB뿐만이 아닙니다. TACO의 경우 OpenStack 서비스별 API, Scheduler가 다수 실행되며 RabbitMQ, Ingress, Etcd, Open vSwitch, Memcached 등 수 많은 서비스가 분산 배포됩니다.
- 
+
  이런 서비스를 개발하면서 그에 대한 안정성 테스트를 생각하게 됩니다. 분산 서비스를 하는 이유는 속도 개선도 있지만 서버 한대가 이상이 생겨도 나머지 서버들이 서비스를 안전하게 동작시키기 위함입니다. 때문에 전통적인 기능, 성능 테스트뿐 아니라 장애 테스트를 추가하게됩니다.
- 
+
  장애 테스트를 하려면 다음을 규정해야 합니다.
 
 1. 정상 상태에 대한 규정 - 정상이라고 판단하기 위해 동작해야 하는 기능 리스트
-2. 장애 발생 변수에 대한 규정 - 서비스의 구성요소(하드웨어, 네트워크, 스토리지 장애 및 OS 장애 등등) 
+2. 장애 발생 변수에 대한 규정 - 서비스의 구성요소(하드웨어, 네트워크, 스토리지 장애 및 OS 장애 등등)
 
  위 두가지를 정의했다면 이제 정상 상태의 서비스에 장애를 발생시키면서 서비스가 정상 작동하는지 검증해야합니다. 이는 실제로 일어날 수 있는 상황들을 가정하기 때문에 운영을 하기 위해 꼭 필요한 테스트입니다. 서비스 운영 시 발생하는 장애 요인을 미리 제거하는 이러한 활동을 카오스 엔지니어링<sup name="a1">[1](#f1)</sup>이라고 합니다.
- 
+
 
 ![TACO CI/CD]({{ site.baseurl }}{{ post.url }}/assets/img/cookiemonster/taco-cicd.png)
 [![License: CC BY-NC-ND 4.0](https://licensebuttons.net/l/by-nc-nd/4.0/80x15.png)](https://creativecommons.org/licenses/by-nc-nd/4.0/)
@@ -43,6 +43,7 @@ author: "이재상"
 
 ## Cookiemonster
  Cookiemonster는 SKT에서 개발한 Apache 2.0 라이센스의 오픈소스 프로젝트로 TACO의 CI/CD에서 사용하고 있는 Kubernetes용 장애발생툴입니다. Cookiemonster pod와 worker pod으로 구성되며 다음 역할을 수행합니다.
+  - Project Code: <https://github.com/sktelecom-oslab/cookiemonster>
 
 ![Cookiemonster 구성]({{ site.baseurl }}{{ post.url }}/assets/img/cookiemonster/cookiemonster.png)
 [![License: CC BY-NC-ND 4.0](https://licensebuttons.net/l/by-nc-nd/4.0/80x15.png)](https://creativecommons.org/licenses/by-nc-nd/4.0/)
@@ -51,6 +52,7 @@ author: "이재상"
 
 ### 개발이유
  기존 장애 유발 툴들은 테스트를 백그라운드가 아닌 포어그라운드에서 수행합니다. 때문에 장애를 내고 있는 화면이 아닌 다른 곳에서 검증을 수행해야하는데 이는 저희가 사용하는 Jenkins에 적합하지 않았습니다. (Jenkins에서 parallel 작업을 지원하지만 깔끔하게 적용하기가 어려웠습니다.) 만약에 테스트가 백그라운드로 수행된다면, Jenkins 내에서 장애를 발생시킨 후 바로 검증 작업을 수행할 수 있을 것입니다. Cookiemonster는 이러한 필요에 의해 REST API로 서비스 요청을 수행하며 백그라운드로 장애발생을 시작/중단하여 손쉽게 Jenkins Job으로 적용할 수 있습니다.  
+
 ### 설치방법
  github 저장소에서 Cookiemonster를 다운로드 받습니다.
 
@@ -76,7 +78,7 @@ cookiemonsterworker-rhnsj        1/1       Running   0          3s
 ```
 
  cookiemonster pod이 제대로 배포되지 않았다면 ```kubectl create -f ./k8s```을 한번 더 수행합니다.
-  
+
 ### 사용방법
  cookiemonster는 30003 포트로 API 요청을 처리합니다. 포트 정보는 아래 명령으로 확인합니다.
 
@@ -125,7 +127,7 @@ start initiated
 
  cookiemonster pod의 로그를 확인합니다. 30초마다 랜덤하게 deployment를 파괴시키고 있습니다.
 
-```bash
+~~~ bash
 taco@ctrl01-stg:~$ kubectl logs cookiemonster-7dfdf5d77d-blscj -n cookiemonster -f
 2018/02/28 04:27:49 checking directory:  /cookies.d
 2018/02/28 04:27:49 checking directory:  /etc/cookies.d
@@ -145,7 +147,7 @@ taco@ctrl01-stg:~$ kubectl logs cookiemonster-7dfdf5d77d-blscj -n cookiemonster 
 2018/02/28 04:29:49 Running in Kubernetes cluster
 2018/02/28 04:29:49 deployment cinder-backup in namespace openstack has 1 pods defined, 1 available and 0 unavailable
 2018/02/28 04:29:49 Only one pod available, doing nothing
-```
+~~~
 
 #### 장애 중단
  장애 중단 API는 다음과 같습니다.
