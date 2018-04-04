@@ -64,6 +64,7 @@ taco@ctrl01-stg:~$ cd cookiemonster
  kubectl로 k8s폴더에 있는 템플릿을 설치합니다.
 
 ```bash
+taco@ctrl01-stg:~/cookiemonster$ kubectl create ns cookiemonster
 taco@ctrl01-stg:~/cookiemonster$ kubectl create -f ./k8s
 taco@ctrl01-stg:~/cookiemonster$ kubectl get po -n cookiemonster
 NAME                             READY     STATUS    RESTARTS   AGE
