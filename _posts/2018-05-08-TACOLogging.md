@@ -8,13 +8,18 @@
 하지만 docker나 kubernetes에서 제공하는 로깅 기능으로는 TACO의 상황을 효율적으로 감시할 수 없습니다. TACO의 로그는 그 구성요소인 pod나 컨테이너등의 문제로 인해 재기동 되거나 삭제 되었을때에도 관련 로그를 유지하고 있어야 하며 이를 위해 별도의 저장소와 유지주기 등을 관리해야 합니다. 이러한 기능을 수행하는 것을 TACO Logging이라고 합니다.
 
 본 포스트에서는 TACO Logging의 구조와 동작방식을 설명하여 독자들의 이해도를 높히고자 합니다. 이를 통해 TACO Logging을 사용자 편의에따라 다양하게 변경하여 프로젝트에 적용할 수 있도록 하고 사용자 고유의 필요한 로그를 수집하도록 하는 방법또한 설명합니다.
-### logging in docker
+
+### Logging in docker
+
 TACO의 기반 컨테이너 엔진인 docker는 자체의 로깅 기능을 제공하고 있습니다. 로깅 드라이버(logging driver)를 사용하여 표준출력과 표준에러에 대한 처리를 수행합니다. 기본설정에서 docker는 표준출력과 표준에러애서 발생하는 모든 로그를 json 형태로 변환하여 각 컨테이너별 로그파일로 저장합니다. 로깅 드라이버는 컨테이너마다 지정할 수 있으며 이에 대한 설정등은 다음의 페이지를 참조할 수 있습니다.
 * 로깅 드라이버 설정 (https://docs.docker.com/config/containers/logging/configure/)
 * 드라이버에 plugin 적용 (https://docs.docker.com/config/containers/logging/plugins/)
 * output 조절하기 (https://docs.docker.com/config/containers/logging/log_tags/)
-### logging in kubernetes
+
+### Logging in kubernetes
+
 Kubernetes에서는 App과 system의 log를 제공하여 클러스터 내부를 사용자가 이해할수 있도록 돕습니다. 간단하게 다음과 같은 명령으로 클러스터내 존재하는 POD (컨테이너)에 대한 로그를 얻어올 수 있습니다.
+
 ```bash
 kubectl logs -n [namespace] [pod_name]
 ```
@@ -69,6 +74,7 @@ kubernetes에서는 공식적인 솔루션을 제시하지 않지만 다음과 �
 | Sidecar container with a logging agent | Exposing logs directly from the application |
 | :-------------: |:-------------:|
 | ![Sidecar container with a logging agent ](https://d33wubrfki0l68.cloudfront.net/d55c404912a21223392e7d1a5a1741bda283f3df/c0397/images/docs/user-guide/logging/logging-with-sidecar-agent.png ) |![Exposing logs directly from the application](https://d33wubrfki0l68.cloudfront.net/0b4444914e56a3049a54c16b44f1a6619c0b198e/260e4/images/docs/user-guide/logging/logging-from-application.png) |
+
 그림출처: https://kubernetes.io
 
 ### Architecture
@@ -92,15 +98,17 @@ kubernetes에서는 공식적인 솔루션을 제시하지 않지만 다음과 �
 	* 정형화된 조회구조를 정의 후 대시보드 구성
 	* kibana 사용
 
-추가적으로 TACO Logging은 외부툴 연동을 지원하기위해 구조를 제공합니다.
-공유큐로 데이터 전달을 지원한다. 현재 kafka 로 로그를 전달하는 것이 가능하며 외부툴은 kafka의 큐 연동을 통해 
+![EFK Logging](https://tde.sktelecom.com/wiki/download/attachments/162136451/logging%20Copy.png?api=v2)
+
+추가적으로 TACO Logging은 외부툴 연동을 지원하기위해 구조를 제공합니다. 통합기(aggregator)를 통해 kafka에 데이터를 전달할 수 있도록 구현되어 있으며 외부 툴들은 kafka의 데이터를 구독하면 TACO Logging에서 수집한 로그를 실시간 활용가능합니다.
 
 ---
-**Agent 선택**
+참고. **Agent 선택**
 
 오픈소스 진영에는 logstash, fluentd, flume, beaver(?)와 같이 다양한 로그수집기가 존재한다. 이들은 각각의 특징을 갖고 있으며 이에따라 상황에 따른 장단점을 갖고 있다. 일반적인 경우에 logstash가 가장 많이 쓰이고 있다. Hadoop 등 Big-Data 관련 솔루션의 경우 flume을 선호하는 경향이 있다. Monasca 진영의 경우 beaver를 사용하여 로그를 수집한다. 그 외에도 elasticsearch 등을 주도하고 있는 elastic.co의 filebeat 또한 고려가능하다. TACO에서는 kubernetes의 매타정보를 가장 잘 반영할 수 있고 fluent-bit으로 small-footprint를 지원하는 fluent를 수집기로 선정하여 사용하였다.
 
 Fluent 진영에서는 small-footprint 지원을 위해 기존의 로그 수집기인 fluentd에 fluent-bit이라는 경량의 로그수집기를 소개하였으며 두 수집기의 차이는 다음과 같다. TACO에서는 이러한 특징을 반영하여 로그 수집기로 fluent-bit을 로그 통합기(aggregator)로 fluentd를 사용하였다.
+
 | | Fluentd | Fluent Bit |
 | --- | --- | --- |
 |Scope	|Containers / Servers	|Containers / Servers|
@@ -114,14 +122,28 @@ Fluent 진영에서는 small-footprint 지원을 위해 기존의 로그 수집�
 
 ---
 
+---
+참고. **노드별 로그위치**
+
+docker의 경우 기본적으로 모든 컨테이너 로그를 물리서버(BareMetal)의 /var/lib/docker/containers/[Container-HASH]/[Container-HASH]-[Type].log 의 위치에 type별 로그를 저장합니다. k8s에서는 이 로그를 필요한 매타데이터와 함께 link를 설정하여 각 로그파일을 관리합니다. k8s의 관점에서 보면 모든 pod의 로그들을 /var/log/container/* 형태로 저장하여 관리하고 있습니다. TACO에서 설치하는 로그 수집기는 해당 디렉토리에서 발생하는 모든 로그를 추적하는 것으로 raw 데이터를 수집하고 필요한 매타정보를 추가하여 저장소로 전달합니다.  
+
+*링크로 연결된 로그파일 예시*
+```
+/var/log/containers/weave-scope-app-65f7f776f9-b6qkk_kube-system_app-eccff309fe566b5397faa3939cfa2773966f9a39e3bf0b3f598f45c94f80e13f.log -> /var/log/pods/8de1b0c2-062d-11e8-b54c-3ca82a1c8f58/app_0.log
+/var/log/pods/8de1b0c2-062d-11e8-b54c-3ca82a1c8f58/app_0.log -> /var/lib/docker/containers/eccff309fe566b5397faa3939cfa2773966f9a39e3bf0b3f598f45c94f80e13f/eccff309fe566b5397faa3939cfa2773966f9a39e3bf0b3f598f45c94f80e13f-json.log
+/var/lib/docker/containers/eccff309fe566b5397faa3939cfa2773966f9a39e3bf0b3f598f45c94f80e13f/eccff309fe566b5397faa3939cfa2773966f9a39e3bf0b3f598f45c94f80e13f-json.log
+```
+---
+
 ### Logs in ElasticSearch (Schema)
- 저장된 데이터를 추후 효율적으로 활용하기 위해서는 저장방법에 대한 규정이 필요합니다. fluent-logging은 이를 위해 elasticsearch의 저장하는 인덱스에 mapping (스키마)를 설정하고 있으며 이 기본값은 구축시 사용자의 요구에 따라 변경 가능합니다. 
+
+ TACO에서 수집된 로그는 최종 저장소인 ElasticSearch(이하 ES)에 다양한 매타정보를 포함하여 저장됩니다. 저장되는 단위는 표준출력 혹은 표준에러에서 발생하는 로그 한줄이 하나의 도큐먼트화되어 저장됩니다. 저장된 데이터를 효율적으로 활용하기 위해서는 저장방법에 대한 규정이 필요합니다. fluent-logging은 이를 위해 ES의 대상 인덱스에 mapping (스키마)를 설정하고 있습니다. 이 값은 구축시 사용자의 요구에 따라 변경 가능합니다. 
  
- 기본적으로 elasticsearch는 모든 문장을 단어단위로 잘라서 저장합니다. 추후 조회나 분류를 위해 정확한 필드의 내용을 사용해야 하는 경우 분리된(tokenized) 필드의 경우 해당 작업이 힘들거나 불가능 할 수도 있습니다. 예를들면 pod명의 경우 'weave-scope-agent-56dfr' 와 같은 값을 갖는데 기본 저장방식을 사용하면 weave, scope, agent, 56dfr 형태로 각각 분리되어 저장되고 검색도 단어 단위로 이뤄집니다. 
+ 기본적으로 ES는 모든 문장을 단어단위로 잘라서 저장합니다. 추후 조회나 분류를 위해 정확한 필드의 내용을 사용해야 하는 경우 분리된(tokenized) 필드의 경우 해당 작업이 힘들거나 불가능 할 수도 있습니다. 예를들면 pod명의 경우 'weave-scope-agent-56dfr' 와 같은 값을 갖는데 기본 저장방식을 사용하면 weave, scope, agent, 56dfr 형태로 각각 분리되어 저장되고 검색도 단어 단위로 이뤄집니다. 
 
 fluent-logging에서는 다음의 정보들을 활용하기 위해 분리하지 않고 키워드 형태로 저장하도록 하고 있으며 인덱스와 저장되는 데이터의 예시는 다음과 같습니다.
 
-**Schema**
+**Mapping**
 ```xml
 "mappings" : {
   "fluent-logging" : {
@@ -223,8 +245,36 @@ dial tcp 127.0.0.1:10255: getsockopt: connection refused\n",
 }
 ```
 
-저장된 데이터 검색하여 원하는 로그를 찾아낼수 있고 통계도 추출 가능하다.
+ ES의 다양한 기능을 사용하면 저장된 데이터에 대한 검색을 통해 원하는 로그를 찾아낼수 있고 필요한 통계의 추출도 가능합니다. ES는 인덱스, 타입, 필드 순의 자료구조를 갖고 있으며 필드에 구체적인 값을 저장합니다. 앞에 정의한 mapping(스키마)에서 각각 필드에 대한 속성을 정의하고 있으며 정의된 속성에 따라 가능한 검색기능이 제한됩니다. TACO Logging을 사용하여 저장되는 스키마에서 중요성을 갖는 필드들은 다음과 같고 의미는 필드명에서 충분히 설명하고 있습니다. 
+* kubernetes.namespace_name
+* kubernetes.pod_name
+* kubernetes.pod_id
+* kubernetes.host
+* kubernetes.container_name
+* kubernetes.docker_id
+* kubernetes.label
+	* app
+	* application
+	* component
+	* release_group 
 
-기본적으로 ES의 경우는 필드별로 저장된 데이터의 형태에 따라 검색가능여부가 달라지며 이에따라 기능이 제한된다.
+
+적용
+### EFK (Elasticsearch - Fluent - Kibana)기반 Logging 구조
+   
+Fluent-bit
+모든 TACO 노드에 설치
+docker에서 발생하는 로그를 수집하여 elasticsearch로 전달
+kubernetes에서 발생하는 metadata를 사용하여 로그와 병합
+small footprint (메모리 사용량 450kb 이하)
+Elasticsearch
+Kubernetes Controller 노드에 설치
+Fluent-bit으로부터 수집된 로그를 저장
+logstash포맷으로 정의되며 일자별 인덱스를 생성
+메타정보인 pod_name, namespace 등은 원문형태로 저장되며 직접 검색가능 
+로그내용이 저장되는 log는 lucene에서 검색가능한 형태로 analiyzed 되어 저장되며 단어별로 검색가능
+Kibana
+수집/저장된 로그에 대한 조회
+
 
 
