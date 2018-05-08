@@ -258,23 +258,95 @@ dial tcp 127.0.0.1:10255: getsockopt: connection refused\n",
 	* component
 	* release_group 
 
+### Fluent-logging chart
 
-적용
-### EFK (Elasticsearch - Fluent - Kibana)기반 Logging 구조
-   
-Fluent-bit
-모든 TACO 노드에 설치
-docker에서 발생하는 로그를 수집하여 elasticsearch로 전달
-kubernetes에서 발생하는 metadata를 사용하여 로그와 병합
-small footprint (메모리 사용량 450kb 이하)
-Elasticsearch
-Kubernetes Controller 노드에 설치
-Fluent-bit으로부터 수집된 로그를 저장
-logstash포맷으로 정의되며 일자별 인덱스를 생성
-메타정보인 pod_name, namespace 등은 원문형태로 저장되며 직접 검색가능 
-로그내용이 저장되는 log는 lucene에서 검색가능한 형태로 analiyzed 되어 저장되며 단어별로 검색가능
-Kibana
-수집/저장된 로그에 대한 조회
+ TACO Logging을 구현하기위해 [fluent-logging chart](https://github.com/openstack/openstack-helm-infra/tree/master/fluent-logging)가 SKT 주도로 개발되었으며 앞의 Architecture 부분에서 언급한 것처럼 fluent, elasticsearch, kibana를 사용하도록 구현되었습니다. openstack-helm-infra에는 fluent-logging 외 ElasticSearch와 Kibana 차트도 제공되고 있으며 TACO 역시 해당 프로젝트에서 제공하는 챠트들을 사용하여 구축합니다.
+ 
+ 사용자의 필요에 의해 기 구축된 ElasticSearch 사용하거나 다른 저장소를 사용 가능합니다.
 
+## Customization
 
+ TACO Logging의 EFK 컴포넌트들은 Kubernetes의 Helm 패키지를 기반으로 구현되었습니다. Helm의 value-override 기능을 사용하면 구축시 필요한 다양한 요구사항을 변형할 수 있습니다. 각 컴포넌트-ElasticSearch, Fluent-bit, Fluentd의 설정은 value-override 기능을 통해 재지정 가능합니다. 본 절에서는 몇가지 유용한 변경의 예시를 살펴보고 간단한 설명을 통해 사용자가 필요한 요구조건을 반영하기위해 어떤 값을 변경시켜나갈 것인지에 대한 방법을 제시하고자 합니다.
 
+### 간결한 구조 예시 (Fluent-bit/ElasticSearch)
+
+현재 kubernetes에 대한 매타정보는 Fluent-bit의 plugin을 통해 입력되고 있습니다. 따라서 별다른 전/후처리가 필요하지 않다면 중간의 aggregation 단계를 생략하고 로그자체를 Fluent-bit -> ElasticSearch 로 전달하는 2단계 구성이 가능해 집니다. 이를 통해 만들어지는 EFK 구조를 도식화 하면 다음과 같습니다.
+
+![EFK Logging](https://tde.sktelecom.com/wiki/download/attachments/162136451/logging%20Copy.png?api=v2)
+
+fluent-logging의 value.yaml은 conf 하부에서 개별 설정파일을 정의하고 있습니다. fluentbit의 설정은 conf.fluentbit 필드에서 정의하고 있으며 [Fluentbit 설정](https://fluentbit.io/documentation/0.12/configuration/file.html)을 참조하여 다음과 같이 변경하면 output을 ElasticSearch로 설정함으로써 위 구조를 적용시킬수 있습니다. (es_output)
+
+```yaml
+conf:
+  fluentbit:
+    - service:
+        header: service
+        Flush: 1
+        Daemon: Off
+        Log_Level: info
+        Parsers_File: parsers.conf
+    - containers_tail:
+        header: input
+        Name: tail
+        Tag: kube.*
+        Path: /var/log/containers/*.log
+        Parser: docker
+        DB: /var/log/flb_kube.db
+        Mem_Buf_Limit: 5MB
+    - kube_filter:
+        header: filter
+        Name: kubernetes
+        Match: kube.*
+        Merge_JSON_Log: On
+    - es_output:
+        header: output
+        Name: es
+        Match: "*"
+        Host: elasticsearch-logging
+        Port: 80
+        Logstash_Format: On
+        HTTP_User: "admin"
+        HTTP_Passwd: "changeme"
+```
+
+### Federation을 위한 구축 예시
+
+ Fluent-logging은 기본적으로 해당 클러스터에서 발생하는 로그에 대한 수용합니다. 따라서 모든 수집된 로그는 동일한 클러스터에서 발생된 것을 가정하고 있습니다. 경우에따라 다수의 클러스터에서 발생하는 로그를 하나의 TACO Logging에 수용하고 관리해야하는 경우 Federation 기능이 필요합니다. 이러한 구조는 다음과 같이 도식화 할수 있습니다. 
+
+![Federation](https://tde.sktelecom.com/wiki/download/attachments/170671917/TACO-LMA-Federation.png?api=v2)
+
+ 다수의 클러스터에서 수집되는 로그들을 하나의 저장소에 보관하고 이를 구분하여 처리하기 위해서는 클러스터에대한 명칭을 정의하는 것이 필요합니다. fluent-bit의 필터 중 [record_modifier](https://fluentbit.io/documentation/0.12/filter/record_modifier.html ) 필터는 원하는 매타정보를 추가하는  기능을 제공하고 있으며 이를 활용하여 수집클러스터를 표기하도록 합니다.
+
+```yaml
+- cluster_filter:
+    header: filter
+    Name: record_modifier
+    Match: "*"
+    record: cluster /* 클러스터 정보 ex> client */
+```
+
+ Federation을 위해 클러스터간 데이터 전달이 필요한데 이를위해 aggregator를 사용하면 다음과 같이 구성이 된다. 저장소가 위치한 클러스터(그림의 Central LMA Cluster)의 aggregator의 노드포트를 설정합니다. (노드포트는 k8s에서 물리노드의 포트를 내부의 자원에서 사용할 수 있도록 하는 요소)
+
+```yaml
+network:
+  fluentd:
+    node_port:
+      enabled: true
+      port: 32323
+```
+
+ 로그를 수집하여 전달하고자하는 클러스터(그림의 Cluster A/B)의 로그수집기는 앞에서 열려진 노트포트로 로그를 전달하도록 변경합니다. 
+
+```yaml
+- fluentd_output:
+    header: output
+    Name: forward
+    Match: "*"
+    Host: /* 서버 ex> 192.168.48.202*/
+    Port: /* 포트넘버 ex> 32323 */
+```
+ 
+ ## Conclusion
+ 
+ 본 포스트에서는 TACO에서 제공하는 Logging mechanism과 주변 기술들에 대해 상세히 기술하였습니다. 또한 사용자화를 통해 변경 가능성을 몇가지 예시를 통해 제시하였습니다. TACO Logging은 TACO뿐 아니라 kubernetes에서 제공하지 못하는 클러스터수준의 로깅기능으로 활용하여 다양한 서비스에 적용 가능합니다. 이후에는 Prometheus의 AlertManager 기능 연계를 통해 수집된 로그로부터 알람을 발생시키는 기능, 다양한 로그파일을 수집하는 기능 등이 추가될 예정입니다. 관심이 있는 분들은 [Openstack Review](https://review.openstack.org/#/q/project:openstack/openstack-helm-infra)나 [VirtualSoftware Lab.의 github](https://github.com/sktelecom-oslab)를 통해 협업 가능합니다. 
+ 
