@@ -1,6 +1,8 @@
 # TACO Logging
 <p>by 임성일(<a href="mailto:si.im@sk.com">si.im@sk.com</a>)</p>
+
 ## Overview
+
 우리는 로그를 사용하여 실행 중인 애플리케이션이나 시스템에의 내부 상황을 파악합니다. 특히, 로그의 사용은 문제를 디버깅하고 작업을 모니터링하는 데 유용합니다. 최신의 응용 소프트웨어들은 다양한 로깅 메커니즘을 제공하고 있으며 TACO의 기반 소프트웨어인 오픈소스들도 각각의 로깅 기능을 제공합니다. TACO의 기반 컨테이너 엔진인 docker-engine의 경우 가장 간단하면서 일반적으로 사용하는 logging방식은 표준출력과 표준에러를 사용하는 로깅 기능을 제공하고 있습니다. 차상위 시스템인 kubernetes 또한 그 나름의 로깅 기능을 제공합니다.
 
 하지만 docker나 kubernetes에서 제공하는 로깅 기능으로는 TACO의 상황을 효율적으로 감시할 수 없습니다. TACO의 로그는 그 구성요소인 pod나 컨테이너등의 문제로 인해 재기동 되거나 삭제 되었을때에도 관련 로그를 유지하고 있어야 하며 이를 위해 별도의 저장소와 유지주기 등을 관리해야 합니다. 이러한 기능을 수행하는 것을 TACO Logging이라고 합니다.
@@ -59,6 +61,7 @@ kubernetes에서는 공식적인 솔루션을 제시하지 않지만 다음과 �
 * Push logs directly to a backend from within an application.
 
 공식 페이지에서는 아래와 같이 클러스터수준의 아키텍쳐를 제시합니다. [https://kubernetes.io](https://kubernetes.io/docs/concepts/cluster-administration/logging/#cluster-level-logging-architectures)
+
 | Using a node logging agent | Streaming sidecar container |
 | :-------------: |:-------------:|
 | ![Using a node logging agent ](https://d33wubrfki0l68.cloudfront.net/2585cf9757d316b9030cf36d6a4e6b8ea7eedf5a/1509f/images/docs/user-guide/logging/logging-with-node-agent.png ) | ![Streaming sidecar container ](https://d33wubrfki0l68.cloudfront.net/c51467e219320fdd46ab1acb40867b79a58d37af/b5414/images/docs/user-guide/logging/logging-with-streaming-sidecar.png ) |
@@ -69,12 +72,159 @@ kubernetes에서는 공식적인 솔루션을 제시하지 않지만 다음과 �
 그림출처: https://kubernetes.io
 
 ### Architecture
-앞에서 언급한 것처럼 kubernetes는 몇가지 클러스터 수준의 로깅기능을 제시하고 있다. 제시된 가지 모델 중 첫번째 방식(Using a node logging agent)를 제외한 나머지 방법은 해당 애플리케이션(POD) 내부에 해당 기능을 제공하거나 
+앞에서 언급한 것처럼 kubernetes는 몇가지 클러스터 수준의 로깅기능을 제시하고 있습니다. 제시된 가지 모델 중 첫번째 방식(Using a node logging agent)를 제외한 나머지 방법은 해당 애플리케이션(POD) 내부에 해당 기능을 제공해야 하므로 우리는 기존 애플리케이션의 변경없이 사용할 수 있는 logging agent를 사용하는 방법을 사용하였고 기반시스템에서 제공하는 로깅기능을 활용하여 필요한 매타정보를 추가하여 별도 저장하는 형태로 시스템을 설계했습니다. 또한 agent 설치 노드에 대한 small-footprint를 유지하도록 하면서 확장성을 확보하도록 하는 유연한 구조를 갖도록 하였습니다. 
 
-### Agent Selection
+* log collection:
+	* 해당 노드에서 동작 중인 컨테이너의 로그를 수집하고 이를 aggregator에 전달
+	* Small-footprint 유지
+	* 각 물리노드 별로 daemonset으로 기동
+	* fluent-bit 사용
+* aggregatior
+	* 수집된 로그에 필요한 전/후처리 가능하고 다양하게 확장가능
+	* 지정한 노드에 필요한 수 만큼의 deployment로 기동
+	* fluentd 사용
+* storage
+	* 수집된 로그를 저장하고 조회기능 제공
+	* 필요한 크기에 따라 저장/조회/정보저장용 pod 각각 조정가능
+	* elasticsearc 사용(JVM Heap사이즈 조정 및 디스크 용량만 변경하여 최적화)
+* Presentation Layer
+	* 데이터에 대한 조회 및 통계를 위한 사용자 인터페이스 제공
+	* 정형화된 조회구조를 정의 후 대시보드 구성
+	* kibana 사용
 
+추가적으로 TACO Logging은 외부툴 연동을 지원하기위해 구조를 제공합니다.
+공유큐로 데이터 전달을 지원한다. 현재 kafka 로 로그를 전달하는 것이 가능하며 외부툴은 kafka의 큐 연동을 통해 
 
+---
+**Agent 선택**
 
+오픈소스 진영에는 logstash, fluentd, flume, beaver(?)와 같이 다양한 로그수집기가 존재한다. 이들은 각각의 특징을 갖고 있으며 이에따라 상황에 따른 장단점을 갖고 있다. 일반적인 경우에 logstash가 가장 많이 쓰이고 있다. Hadoop 등 Big-Data 관련 솔루션의 경우 flume을 선호하는 경향이 있다. Monasca 진영의 경우 beaver를 사용하여 로그를 수집한다. 그 외에도 elasticsearch 등을 주도하고 있는 elastic.co의 filebeat 또한 고려가능하다. TACO에서는 kubernetes의 매타정보를 가장 잘 반영할 수 있고 fluent-bit으로 small-footprint를 지원하는 fluent를 수집기로 선정하여 사용하였다.
 
+Fluent 진영에서는 small-footprint 지원을 위해 기존의 로그 수집기인 fluentd에 fluent-bit이라는 경량의 로그수집기를 소개하였으며 두 수집기의 차이는 다음과 같다. TACO에서는 이러한 특징을 반영하여 로그 수집기로 fluent-bit을 로그 통합기(aggregator)로 fluentd를 사용하였다.
+| | Fluentd | Fluent Bit |
+| --- | --- | --- |
+|Scope	|Containers / Servers	|Containers / Servers|
+|Language	|C & Ruby	|C|
+|Memory	|~40MB	|~450KB|
+|Performance	|High Performance	|High Performance|
+|Dependencies	|Built as a Ruby Gem, it requires a certain number of gems.	|Zero dependencies, unless some special plugin requires them.|
+|Plugins	|More than 650 plugins available	|Around 30 plugins available|
+|License	|Apache License v2.0	|Apache License v2.0|
+|memo |**Various plugins**	|**Small foot-print**|
+
+---
+
+### Logs in ElasticSearch (Schema)
+ 저장된 데이터를 추후 효율적으로 활용하기 위해서는 저장방법에 대한 규정이 필요합니다. fluent-logging은 이를 위해 elasticsearch의 저장하는 인덱스에 mapping (스키마)를 설정하고 있으며 이 기본값은 구축시 사용자의 요구에 따라 변경 가능합니다. 
+ 
+ 기본적으로 elasticsearch는 모든 문장을 단어단위로 잘라서 저장합니다. 추후 조회나 분류를 위해 정확한 필드의 내용을 사용해야 하는 경우 분리된(tokenized) 필드의 경우 해당 작업이 힘들거나 불가능 할 수도 있습니다. 예를들면 pod명의 경우 'weave-scope-agent-56dfr' 와 같은 값을 갖는데 기본 저장방식을 사용하면 weave, scope, agent, 56dfr 형태로 각각 분리되어 저장되고 검색도 단어 단위로 이뤄집니다. 
+
+fluent-logging에서는 다음의 정보들을 활용하기 위해 분리하지 않고 키워드 형태로 저장하도록 하고 있으며 인덱스와 저장되는 데이터의 예시는 다음과 같습니다.
+
+**Schema**
+```xml
+"mappings" : {
+  "fluent-logging" : {
+    "properties" : {
+      "kubernetes" : {
+        "properties" : {
+          "container_name" : {
+            "index" : "not_analyzed",
+            "type" : "keyword"
+          }, 
+          "docker_id" : {
+            "index" : "not_analyzed",
+            "type" : "keyword"
+          }, 
+          "host" : {
+            "index" : "not_analyzed",
+            "type" : "keyword"
+          }, 
+          "labels" : {
+            "properties" : {
+              "app" : {
+                "index" : "not_analyzed",
+                "type" : "keyword"
+              }, 
+              "application" : {
+                "index" : "not_analyzed",
+                "type" : "keyword"
+              }, 
+              "component" : {
+                "index" : "not_analyzed",
+                "type" : "keyword"
+              }, 
+              "release_group" : {
+                "index" : "not_analyzed",
+                "type" : "keyword"
+              }  
+            }  
+          }, 
+          "namespace_name" : {
+            "index" : "not_analyzed",
+            "type" : "keyword"
+          }, 
+          "pod_id" : {
+            "index" : "not_analyzed",
+            "type" : "keyword"
+          }, 
+          "pod_name" : {
+            "index" : "not_analyzed",
+            "type" : "keyword"
+          }  
+        }  
+      }, 
+      "log" : {
+        "type" : "text"
+      }  
+    }  
+  }  
+}
+```
+
+**저장 데이터 예시**
+```json
+{ 
+   "_index":"logstash-2018.02.04",
+   "_type":"fluent-logging",
+   "_id":"AWFeY7RauuiH0H_zHFxS",
+   "_version":1,
+   "_score":1,
+   "_source":{ 
+      "@timestamp":"2018-02-04T01:17:27.349Z",
+      "log":"\u003cprobe\u003e WARN: 2018/02/04 01:17:27.349408 Cannot obtain local \
+pods, reporting all (which may impact performance): Get http://localhost:10255/pods/: \
+dial tcp 127.0.0.1:10255: getsockopt: connection refused\n",
+      "stream":"stderr",
+      "time":"2018-02-04T01:17:27.349642941Z",
+      "kubernetes":{ 
+         "pod_name":"weave-scope-agent-56dfr",
+         "namespace_name":"kube-system",
+         "pod_id":"efe7252d-e565-11e7-b0d2-90e2bab4f938",
+         "labels":{ 
+            "app":"weave-scope",
+            "controller-revision-hash":"1130764677",
+            "name":"weave-scope-agent",
+            "pod-template-generation":"1",
+            "weave-cloud-component":"scope",
+            "weave-scope-component":"agent"
+         },
+         "annotations":{ 
+            "kubernetes_io/created-by":"{\"kind\":\"SerializedReference\",\"apiVersion\":\
+\"v1\",\"reference\":{\"kind\":\"DaemonSet\",\"namespace\":\"kube-system\",\"name\":\
+\"weave-scope-agent\",\"uid\":\"efb7bba7-e565-11e7-b0d2-90e2bab4f938\",\"apiVersion\":\
+\"extensions\",\"resourceVersion\":\"948\"}}\n"
+         },
+         "host":"k2-node06",
+         "container_name":"agent",
+         "docker_id":"fe76859161a19a151e3dbec93db96231b9768452b818f3731f390a7985f4b003"
+      }
+   }
+}
+```
+
+저장된 데이터 검색하여 원하는 로그를 찾아낼수 있고 통계도 추출 가능하다.
+
+기본적으로 ES의 경우는 필드별로 저장된 데이터의 형태에 따라 검색가능여부가 달라지며 이에따라 기능이 제한된다.
 
 
