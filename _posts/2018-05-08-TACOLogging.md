@@ -98,7 +98,7 @@ kubernetes에서는 공식적인 솔루션을 제시하지 않지만 다음과 �
 	* 정형화된 조회구조를 정의 후 대시보드 구성
 	* kibana 사용
 
-![EFK Logging](https://tde.sktelecom.com/wiki/download/attachments/162136451/logging%20Copy.png?api=v2)
+![EFK Logging]({{ site.baseurl }}{{ post.url }}/assets/img/TACO-LMA-Logging.png)
 
 추가적으로 TACO Logging은 외부툴 연동을 지원하기위해 구조를 제공합니다. 통합기(aggregator)를 통해 kafka에 데이터를 전달할 수 있도록 구현되어 있으며 외부 툴들은 kafka의 데이터를 구독하면 TACO Logging에서 수집한 로그를 실시간 활용가능합니다.
 
@@ -272,7 +272,7 @@ dial tcp 127.0.0.1:10255: getsockopt: connection refused\n",
 
 현재 kubernetes에 대한 매타정보는 Fluent-bit의 plugin을 통해 입력되고 있습니다. 따라서 별다른 전/후처리가 필요하지 않다면 중간의 aggregation 단계를 생략하고 로그자체를 Fluent-bit -> ElasticSearch 로 전달하는 2단계 구성이 가능해 집니다. 이를 통해 만들어지는 EFK 구조를 도식화 하면 다음과 같습니다.
 
-![EFK Logging](https://tde.sktelecom.com/wiki/download/attachments/162136451/logging%20Copy.png?api=v2)
+![EFK Logging]({{ site.baseurl }}{{ post.url }}/assets/img/TACO-LMA-Logging_Simple.png)
 
 fluent-logging의 value.yaml은 conf 하부에서 개별 설정파일을 정의하고 있습니다. fluentbit의 설정은 conf.fluentbit 필드에서 정의하고 있으며 [Fluentbit 설정](https://fluentbit.io/documentation/0.12/configuration/file.html)을 참조하여 다음과 같이 변경하면 output을 ElasticSearch로 설정함으로써 위 구조를 적용시킬수 있습니다. (es_output)
 
@@ -313,7 +313,7 @@ conf:
 
  Fluent-logging은 기본적으로 해당 클러스터에서 발생하는 로그에 대한 수용합니다. 따라서 모든 수집된 로그는 동일한 클러스터에서 발생된 것을 가정하고 있습니다. 경우에따라 다수의 클러스터에서 발생하는 로그를 하나의 TACO Logging에 수용하고 관리해야하는 경우 Federation 기능이 필요합니다. 이러한 구조는 다음과 같이 도식화 할수 있습니다. 
 
-![Federation](https://tde.sktelecom.com/wiki/download/attachments/170671917/TACO-LMA-Federation.png?api=v2)
+![Federation]({{ site.baseurl }}{{ post.url }}/assets/img/TACO-LMA-Logging_Federation.png)
 
  다수의 클러스터에서 수집되는 로그들을 하나의 저장소에 보관하고 이를 구분하여 처리하기 위해서는 클러스터에대한 명칭을 정의하는 것이 필요합니다. fluent-bit의 필터 중 [record_modifier](https://fluentbit.io/documentation/0.12/filter/record_modifier.html ) 필터는 원하는 매타정보를 추가하는  기능을 제공하고 있으며 이를 활용하여 수집클러스터를 표기하도록 합니다.
 
