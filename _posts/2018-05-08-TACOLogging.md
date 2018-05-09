@@ -4,7 +4,6 @@ title:  "TACO Logging"
 date:   2018-05-09 18:00:00 +0900
 author: "임성일"
 ---
-# TACO Logging
 <p>by 임성일(<a href="mailto:si.im@sk.com">si.im@sk.com</a>)</p>
 
 ## Overview
