@@ -65,7 +65,7 @@ kubernetes에서는 공식적인 솔루션을 제시하지 않지만 다음과 �
 * Include a dedicated sidecar container for logging in an application pod.
 * Push logs directly to a backend from within an application.
 
- 공식 페이지에서는 아래와 같이 클러스터수준의 아키텍쳐를 제시합니다. [https://kubernetes.io](https://kubernetes.io/docs/concepts/cluster-administration/logging/#cluster-level-logging-architectures)
+ 공식 페이지에서는 아래와 같은 아키텍쳐를 제시합니다. [kubernetes logging](https://kubernetes.io/docs/concepts/cluster-administration/logging/#cluster-level-logging-architectures)
 
 | Using a node logging agent | Streaming sidecar container |
 | :-------------: |:-------------:|
@@ -78,7 +78,7 @@ kubernetes에서는 공식적인 솔루션을 제시하지 않지만 다음과 �
 그림출처: https://kubernetes.io
 
 ### Architecture
- 앞에서 언급한 것처럼 kubernetes는 몇가지 클러스터 수준의 로깅기능을 제시하고 있습니다. 제시된 가지 모델 중 첫번째 방식(Using a node logging agent)를 제외한 나머지 방법은 해당 애플리케이션(POD) 내부에 해당 기능을 제공해야 합니다. 이에따라, 우리는 기존 애플리케이션의 변경없이 사용할 수 있는 logging agent를 사용하는 방법을 사용하였고 기반시스템에서 제공하는 로깅기능을 활용하여 필요한 매타정보를 추가하여 별도 저장하는 형태로 시스템을 설계했습니다. 또한 agent 설치 노드에 대한 small-footprint를 유지하도록 하면서 확장성을 확보하도록 하는 유연한 구조를 갖도록 하였습니다. 
+ 앞에서 언급한 것처럼 kubernetes는 몇가지 클러스터 수준의 로깅기능을 제시하고 있습니다. 제시된 모델 중 첫번째 방식(Using a node logging agent)를 제외한 나머지 방법은 해당 애플리케이션(POD) 내부에 해당 기능을 제공해야 합니다. 이에 따라, 우리는 기존 애플리케이션의 변경없이 사용할 수 있는 logging agent를 사용하는 방법을 사용하였고 기반시스템에서 제공하는 로깅기능을 활용하여 필요한 메타정보를 추가하여 별도 저장하는 형태로 시스템을 설계했습니다. 또한 agent 설치 노드에 대한 small-footprint를 유지하도록 하면서 확장성을 확보하도록 하는 유연한 구조를 갖도록 하였습니다. 
 
 ![EFK Logging]({{ site.baseurl }}{{ post.url }}/assets/img/TACO-LMA-Logging.png)
 
@@ -87,27 +87,27 @@ kubernetes에서는 공식적인 솔루션을 제시하지 않지만 다음과 �
 	* Small-footprint 유지
 	* 각 물리노드 별로 daemonset으로 기동
 	* fluent-bit 사용
-* aggregatior
+* aggregator
 	* 수집된 로그에 필요한 전/후처리 가능하고 다양하게 확장가능
 	* 지정한 노드에 필요한 수 만큼의 deployment로 기동
 	* fluentd 사용
 * storage
 	* 수집된 로그를 저장하고 조회기능 제공
 	* 필요한 크기에 따라 저장/조회/정보저장용 pod 각각 조정가능
-	* elasticsearc 사용(JVM Heap사이즈 조정 및 디스크 용량만 변경하여 최적화)
+	* elasticsearch 사용(JVM Heap사이즈 조정 및 디스크 용량만 변경하여 최적화)
 * Presentation Layer
 	* 데이터에 대한 조회 및 통계를 위한 사용자 인터페이스 제공
 	* 정형화된 조회구조를 정의 후 대시보드 구성
 	* kibana 사용
 
- 추가적으로 TACO Logging은 외부툴 연동을 지원하기위해 구조를 제공합니다. 통합기(aggregator)를 통해 kafka에 데이터를 전달할 수 있도록 구현되어 있으며 외부 툴들은 kafka의 데이터를 구독하면 TACO Logging에서 수집한 로그를 실시간 활용가능합니다.
+ 추가적으로 TACO Logging은 3rd-party 툴 연동이 가능합니다. 통합기(aggregator)를 통해 kafka에 데이터를 전달할 수 있도록 구현되어 있으며 외부 툴들은 kafka의 데이터를 구독하면 TACO Logging에서 수집한 로그를 실시간 활용가능합니다.
 
 ---
 참고. **Agent 선택**
 
- 오픈소스 진영에는 logstash, fluentd, flume, beaver(?)와 같이 다양한 로그수집기가 존재한다. 이들은 각각의 특징을 갖고 있으며 이에따라 상황에 따른 장단점을 갖고 있다. 일반적인 경우에 logstash가 가장 많이 쓰이고 있다. Hadoop 등 Big-Data 관련 솔루션의 경우 flume을 선호하는 경향이 있다. Monasca 진영의 경우 beaver를 사용하여 로그를 수집한다. 그 외에도 elasticsearch 등을 주도하고 있는 elastic.co의 filebeat 또한 고려가능하다. TACO에서는 kubernetes의 매타정보를 가장 잘 반영할 수 있고 fluent-bit으로 small-footprint를 지원하는 fluent를 수집기로 선정하여 사용하였다.
+ 오픈소스 진영에는 logstash, fluentd, flume, beaver와 같이 다양한 로그수집기가 존재한다. 이들은 각각의 특징을 갖고 있으며 이에 따라 상황에 따른 장단점을 갖고 있다. 일반적인 경우에 logstash가 가장 많이 쓰이고 있으며, Hadoop 등 Big-Data 관련 솔루션의 경우 flume을 선호하는 경향이 있다. Monasca 진영의 경우 beaver를 사용하여 로그를 수집한다. 그 외에도 elasticsearch 등을 주도하고 있는 elastic.co의 filebeat 또한 고려가능하다. TACO에서는 kubernetes의 매타정보를 가장 잘 반영할 수 있고 fluent-bit으로 small-footprint를 지원하는 fluent를 수집기로 선정하여 사용하였다.
 
- Fluent 진영에서는 small-footprint 지원을 위해 기존의 로그 수집기인 fluentd에 fluent-bit이라는 경량의 로그수집기를 소개하였으며 두 수집기의 차이는 다음과 같다. TACO에서는 이러한 특징을 반영하여 로그 수집기로 fluent-bit을 로그 통합기(aggregator)로 fluentd를 사용하였다.
+ Fluent 진영에서는 small-footprint 지원을 위해 기존의 로그 수집기인 fluentd와 별도로 이를 경량화한 fluent-bit이라는 로그수집기를 소개하였으며 두 수집기의 차이는 아래 표와 같다. TACO에서는 이러한 특징을 반영하여 로그 수집기로 fluent-bit을 로그 통합기(aggregator)로 fluentd를 사용하였다.
 
 | | Fluentd | Fluent Bit |
 | --- | --- | --- |
@@ -137,7 +137,7 @@ kubernetes에서는 공식적인 솔루션을 제시하지 않지만 다음과 �
 
 ### Logs in ElasticSearch (Schema)
 
- TACO에서 수집된 로그는 최종 저장소인 ElasticSearch(이하 ES)에 다양한 매타정보를 포함하여 저장됩니다. 저장되는 단위는 표준출력 혹은 표준에러에서 발생하는 로그 한줄이 하나의 도큐먼트화되어 저장됩니다. 저장된 데이터를 효율적으로 활용하기 위해서는 저장형태에 대한 규정이 필요합니다. fluent-logging은 이를 위해 ES의 대상 인덱스에 mapping (스키마)를 설정하고 있습니다. 이 값은 구축시 사용자의 요구에 따라 변경 가능합니다. 
+ TACO에서 수집된 로그는 최종 저장소인 ElasticSearch(이하 ES)에 다양한 메타정보를 포함하여 저장됩니다. 저장되는 단위는 표준출력 혹은 표준에러에서 발생하는 로그 한줄이 하나의 도큐먼트화되어 저장됩니다. 저장된 데이터를 효율적으로 활용하기 위해서는 저장형태에 대한 규정이 필요합니다. fluent-logging은 이를 위해 ES의 대상 인덱스에 mapping (스키마)를 설정하고 있습니다. 이 값은 구축시 사용자의 요구에 따라 변경 가능합니다. 
  
  기본적으로 ES는 모든 문장을 단어단위로 분리하여 저장합니다. 추후 조회나 분류를 위해 정확한 필드의 내용을 사용해야 하는 경우 분리된(tokenized) 필드의 경우 해당 작업이 힘들거나 불가능 할 수도 있습니다. 예를들면 pod명의 경우 'weave-scope-agent-56dfr' 와 같은 값을 갖는데 기본 저장방식을 사용하면 weave, scope, agent, 56dfr 형태로 각각 분리되어 저장되고 검색도 단어 단위로 이뤄집니다.
 
@@ -268,15 +268,15 @@ dial tcp 127.0.0.1:10255: getsockopt: connection refused\n",
 
 ## Customization
 
- TACO Logging의 EFK 컴포넌트들은 Kubernetes의 Helm 패키지를 기반으로 구현되었습니다. Helm의 value-override 기능을 사용하면 구축시 필요한 다양한 요구사항을 변형할 수 있습니다. 각 컴포넌트 ElasticSearch, Fluent-bit, Fluentd의 설정은 value-override 기능을 통해 재지정 가능합니다. 본 절에서는 몇가지 유용한 변경의 예시를 살펴보고 간단한 설명을 통해 사용자가 필요한 요구조건을 반영하기위해 어떤 값을 변경시켜나갈 것인지에 대한 방법을 제시하고자 합니다.
+ TACO Logging은 Kubernetes의 Helm 차트를 사용하여 배포합니다. Helm의 value-override 기능을 사용하면 구축시 필요한 다양한 요구사항을 변형할 수 있습니다. TACO Logging를 구성하는 ElasticSearch, Fluent-bit, Fluentd의 설정은 value-override 기능을 통해 재지정 가능합니다. 본 절에서는 몇가지 유용한 변경 예시를 살펴보고 간단한 설명을 통해 사용자가 필요한 요구조건을 반영하기위해 어떤 값을 변경시켜나갈 것인지에 대한 방법을 제시하고자 합니다.
 
 ### 간결한 구조 예시 (Fluent-bit/ElasticSearch)
 
- 현재 kubernetes에 대한 매타정보는 Fluent-bit의 plugin을 통해 입력되고 있습니다. 따라서 별다른 전/후처리가 필요하지 않다면 중간의 aggregation 단계를 생략하고 로그자체를 Fluent-bit -> ElasticSearch 로 전달하는 2단계 구성이 가능해 집니다. 이를 통해 만들어지는 EFK 구조를 도식화 하면 다음과 같습니다.
+ 현재 kubernetes에 대한 메타정보는 Fluent-bit의 plugin을 통해 입력되고 있습니다. 따라서 별다른 전/후처리가 필요하지 않다면 중간의 aggregation 단계를 생략하고 로그자체를 Fluent-bit -> ElasticSearch 로 전달하는 2단계 구성이 가능해 집니다. 이를 통해 만들어지는 EFK 구조를 도식화 하면 다음과 같습니다.
 
 ![EFK Logging]({{ site.baseurl }}{{ post.url }}/assets/img/TACO-LMA-Logging_Simple.png)
 
-fluent-logging의 value.yaml은 conf 하부에서 개별 설정파일을 정의하고 있습니다. fluentbit의 설정은 conf.fluentbit 필드에서 정의하고 있으며 [Fluentbit 설정](https://fluentbit.io/documentation/0.12/configuration/file.html)을 참조하여 다음과 같이 변경하면 output을 ElasticSearch로 설정함으로써 위 구조를 적용시킬수 있습니다. (es_output)
+fluent-logging의 value.yaml은 conf 필드에 개별 설정파일을 정의하고 있습니다. fluentbit의 설정은 conf.fluentbit 필드에서 정의하고 있으며 [Fluentbit 설정](https://fluentbit.io/documentation/0.12/configuration/file.html)을 참조하여 다음과 같이 변경하면 output을 ElasticSearch로 설정함으로써 위 구조를 적용시킬수 있습니다. (es_output)
 
 ```yaml
 conf:
@@ -317,7 +317,7 @@ conf:
 
 ![Federation]({{ site.baseurl }}{{ post.url }}/assets/img/TACO-LMA-Logging_Federation.png)
 
- 다수의 클러스터에서 수집되는 로그들을 하나의 저장소에 보관하고 이를 구분하여 처리하기 위해서는 클러스터에대한 명칭을 정의하는 것이 필요합니다. fluent-bit의 필터 중 [record_modifier](https://fluentbit.io/documentation/0.12/filter/record_modifier.html ) 필터는 원하는 매타정보를 추가하는  기능을 제공하고 있으며 이를 활용하여 수집클러스터를 표기하도록 합니다.
+ 다수의 클러스터에서 수집되는 로그들을 하나의 저장소에 보관하고 이를 구분하여 처리하기 위해서는 수집되는 클러스터의 명칭을 정의하는 것이 필요합니다. fluent-bit의 필터 중 [record_modifier](https://fluentbit.io/documentation/0.12/filter/record_modifier.html) 필터는 원하는 매타정보를 추가하는 기능을 제공하고 있으며 이를 활용하여 수집클러스터를 표기하도록 합니다.
 
 ```yaml
 - cluster_filter:
@@ -327,7 +327,7 @@ conf:
     record: cluster /* 클러스터 정보 ex> client */
 ```
 
- Federation을 위해 클러스터간 데이터 전달이 필요한데 이를위해 aggregator를 사용하면 다음과 같이 구성이 된다. 저장소가 위치한 클러스터(그림의 Central LMA Cluster)의 aggregator의 노드포트를 설정합니다. (노드포트는 k8s에서 물리노드의 포트를 내부의 자원에서 사용할 수 있도록 하는 요소)
+ Federation을 위해 클러스터간 데이터 전달이 필요한데 이를위해 aggregator를 사용하면 다음과 같이 구성이 됩니다. 저장소가 위치한 클러스터(상단 그림의 Central LMA Cluster)의 aggregator의 노드포트를 설정합니다. (노드포트는 k8s에서 물리노드의 포트를 내부의 자원에서 사용할 수 있도록 하는 요소)
 
 ```yaml
 network:
@@ -337,7 +337,7 @@ network:
       port: 32323
 ```
 
- 로그를 수집하여 전달하고자하는 클러스터(그림의 Cluster A/B)의 로그수집기는 앞에서 열려진 노트포트로 로그를 전달하도록 변경합니다. 
+ 로그를 수집하여 전달하고자하는 클러스터(상단 그림의 Cluster A/B)의 로그수집기는 앞에서 열려진 노트포트로 로그를 전달하도록 변경합니다. 
 
 ```yaml
 - fluentd_output:
@@ -350,5 +350,4 @@ network:
  
  ## Conclusion
  
- 본 포스트에서는 TACO에서 제공하는 Logging mechanism과 주변 기술들에 대해 상세히 기술하였습니다. 또한 사용자화를 통해 변경 가능성을 몇가지 예시를 통해 제시하였습니다. TACO Logging은 TACO뿐 아니라 kubernetes에서 제공하지 못하는 클러스터수준의 로깅기능으로 활용하여 다양한 서비스에 적용 가능합니다. 이후에는 Prometheus의 AlertManager 기능 연계를 통해 수집된 로그로부터 알람을 발생시키는 기능, 다양한 로그파일을 수집하는 기능 등이 추가될 예정입니다. 관심이 있는 분들은 [Openstack Review](https://review.openstack.org/#/q/project:openstack/openstack-helm-infra)나 [VirtualSoftware Lab.의 github](https://github.com/sktelecom-oslab)를 통해 협업 가능합니다. 
- 
+ 본 포스트에서는 TACO에서 제공하는 Logging mechanism과 주변 기술들에 대해 상세히 기술하였습니다. 또한 환경에 따른 변경 가능성을 몇가지 예시를 통해 제시하였습니다. TACO Logging은 kubernetes 클러스터 로깅 서비스로서 kubernetes에 올라가는 서비스라면 TACO외데 다른 서비스에도 사용 가능합니다. 이후 개발방향은 Prometheus의 AlertManager 기능 연계를 통해 수집된 로그로부터 알람을 발생시키는 기능, 다양한 로그파일을 수집하는 기능 등이 추가될 예정입니다. 관심이 있는 분들은 [Openstack Review](https://review.openstack.org/#/q/project:openstack/openstack-helm-infra)나 [VirtualSoftware Lab.의 github](https://github.com/sktelecom-oslab)를 통해 협업 가능합니다. 
