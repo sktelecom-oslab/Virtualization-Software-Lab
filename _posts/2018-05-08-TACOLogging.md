@@ -65,7 +65,7 @@ kubernetes에서는 공식적인 솔루션을 제시하지 않지만 다음과 �
 * Include a dedicated sidecar container for logging in an application pod.
 * Push logs directly to a backend from within an application.
 
- 공식 페이지에서는 아래와 같은 아키텍쳐를 제시합니다. [kubernetes logging](https://kubernetes.io/docs/concepts/cluster-administration/logging/#cluster-level-logging-architectures)
+ 공식 페이지에서는 아래와 같은 아키텍쳐를 제시합니다.([kubernetes logging](https://kubernetes.io/docs/concepts/cluster-administration/logging/#cluster-level-logging-architectures))
 
 | Using a node logging agent | Streaming sidecar container |
 | :-------------: |:-------------:|
