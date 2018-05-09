@@ -337,7 +337,7 @@ network:
       port: 32323
 ```
 
- 로그를 수집하여 전달하고자하는 클러스터(상단 그림의 Cluster A/B)의 로그수집기는 앞에서 열려진 노트포트로 로그를 전달하도록 변경합니다. 
+ 로그를 수집하여 전달하고자하는 클러스터(상단 그림의 Cluster A/B)의 로그수집기는 앞에서 열려진 노드포트로 로그를 전달하도록 변경합니다. 
 
 ```yaml
 - fluentd_output:
@@ -350,4 +350,4 @@ network:
  
  ## Conclusion
  
- 본 포스트에서는 TACO에서 제공하는 Logging mechanism과 주변 기술들에 대해 상세히 기술하였습니다. 또한 환경에 따른 변경 가능성을 몇가지 예시를 통해 제시하였습니다. TACO Logging은 kubernetes 클러스터 로깅 서비스로서 kubernetes에 올라가는 서비스라면 TACO외의 다른 서비스에서도 사용 가능합니다. 이후 개발방향은 Prometheus의 AlertManager 기능 연계를 통해 수집된 로그로부터 알람을 발생시키는 기능, 다양한 로그파일을 수집하는 기능 등이 추가될 예정입니다. 관심이 있는 분들은 [Openstack Review](https://review.openstack.org/#/q/project:openstack/openstack-helm-infra)나 [VirtualSoftware Lab.의 github](https://github.com/sktelecom-oslab)를 통해 협업 가능합니다. 
+ 본 포스트에서는 TACO에서 제공하는 Logging mechanism과 주변 기술들에 대해 상세히 기술하였습니다. 또한 환경에 따른 변경 가능성을 몇가지 예시를 통해 제시하였습니다. TACO Logging은 kubernetes 클러스터 로깅 서비스로서 kubernetes에 올라가는 서비스라면 TACO외의 다른 서비스에서도 사용 가능합니다. 이후 개발방향은 Prometheus의 AlertManager 기능 연계를 통해 수집된 로그로부터 알람을 발생시키는 기능, 다양한 로그파일을 수집하는 기능 등이 추가될 예정입니다. 관심이 있는 분들은 [Openstack Review](https://review.openstack.org/#/q/project:openstack/openstack-helm-infra)나 [Virtualization Software Lab.의 github](https://github.com/sktelecom-oslab)를 통해 협업 가능합니다. 
