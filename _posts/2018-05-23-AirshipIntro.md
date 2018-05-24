@@ -20,7 +20,7 @@ Airship을 사용하면 다양한 형상의 클라우드 사이트를 전보다 
 프로젝트 초기의 목표는 주로 [Kubernetes] 클러스터 위에 오픈스택을 설치하고, 그렇게 구축한 클라우드의 라이프 사이클을 규모와 신속성, 탄력성, 유연성, 특히 네트워크 클라우드에 필요한 운영상의 예측성을 가지고 관리할 수 있는 선언적인 플랫폼을 구현하는데 있습니다. 특히, "선언적"이라는 용어는 매우 큰 장점을 가지고 있는 단순한 개념입니다. 쉽게 설명하면, 구축할 클라우드의 모든 부분을 표준화된 Manifest에 정의함으로써 미세한 부분까지 유연하게 제어할 수 있게 해 주며, 선언적인 플랫폼은 이러한 Manifest에 정의된 내용이 실제로 실현 되고 상황이 변하더라도 일관성 있게 유지될 수 있도록 해줍니다. 
 
 ## AIRSHIP SUB-PROJECT 
-Airship 프로젝트는 다음과 같은 서브 프로젝트들로 구성되어 있습니다. 
+Airship 프로젝트는 다음과 같은 서브 프로젝트들로 구성되어 있으며, SKT는 이 중에서 "Armada"의 개발에 참여하고 있습니다. 
 
 - Armada - An orchestrator for deploying and upgrading a collection of Helm charts 
 - Berth - A lightweight mechanism for managing VMs on top of Kubernetes via Helm
@@ -32,7 +32,7 @@ Airship 프로젝트는 다음과 같은 서브 프로젝트들로 구성되어 
 - Shipyard - A cluster lifecycle orchestrator for Airship
 
 ## SKT 참여 범위
-이러한 다양한 Airship의 서브 프로젝트들 중에서 SKT는 "Armada"의 개발에 참여 하고 있습니다. 아래 그림과 같이 복잡한 마이크로 서비스 형태로 구성된 오픈스택 서비스들은 우선 OpenStack Kolla 혹은 LOCI 프로젝트를 통해서 컨테이너 이미지로 만들어집니다. 그리고, OpenStack-Helm 프로젝트를 기반으로 Kubernetes 상에 설치될 수 있는 형태로 패키징 되고, Armada는 이렇게 패키징 된 많은 서비스들을 위에서 설명한 것과 같이 선언적으로 관리하고 오케스트레이션 할 수 있도록 만들어 줍니다.
+위에서 말씀 드렸듯이, Airship의 서브 프로젝트들 중에서 SKT는 "Armada"의 개발에만 참여 하고 있습니다. 아래 그림과 같이 복잡한 마이크로 서비스 형태로 구성된 오픈스택 서비스들은 우선 OpenStack Kolla 혹은 LOCI 프로젝트를 통해서 컨테이너 이미지로 만들어집니다. 그리고, OpenStack-Helm 프로젝트를 기반으로 Kubernetes 상에 설치될 수 있는 형태로 패키징 되고, Armada는 이렇게 패키징 된 많은 서비스들을 위에서 설명한 것과 같이 선언적으로 관리하고 오케스트레이션 할 수 있도록 만들어 줍니다.
 
 ![Three Main Steps for OpenStack on Kubernetes]({{ site.baseurl }}{{ post.url }}/assets/img/airship/airship_companies_v2.png)
 [![License: CC BY-NC-ND 4.0](https://licensebuttons.net/l/by-nc-nd/4.0/80x15.png)](https://creativecommons.org/licenses/by-nc-nd/4.0/)
