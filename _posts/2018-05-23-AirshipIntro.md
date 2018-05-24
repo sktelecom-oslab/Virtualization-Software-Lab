@@ -1,10 +1,12 @@
 ---
-title: Open Infrastructure Project "Airship" Introduction 
+title: Open Infrastructure Project "Airship"
 author: 안재석
 author-email: jay.ahn@sk.com
 description: SKT, AT&T-오픈스택 재단과 함께 손쉬운 클라우드 구축을 가속화 할 새로운 오픈 인프라 프로젝트 Airship 출범
 ---
-# Open Infrastructure Project, Airship 런칭 
+# Open Infrastructure Project, Airship
+For English Version, please visit [SKT Global Blog]. 
+ 
 SKT는 AT&T등과 함께 새로운 Open Infrastructure Project인 "[Airship]"를 런칭하였습니다. 그리고, 앞으로 AT&T 및 다른 참여회사들, OpenStack Foundation과 협력하여 OpenStack의 Top-Level Project로 만들 수 있도록 노력할 계획입니다. 이번 블로그에서는 Airship 전체 프로젝트에 대해서 간략한 소개를 드리고, Airship에 포함된 여러개의 Sub-Project들 중에서 SKT가 참여하는 부분에 대해서 말씀드리도록 하겠습니다. 
 
 ![Companies participating Airship project]({{ site.baseurl }}{{ post.url }}/assets/img/airship/airship_companies_v2.png)
@@ -47,3 +49,4 @@ Airship과 관련된 내용은 프로젝트 홈페이지 (http://www.airshipit.o
 [OpenStack-Helm]: https://github.com/openstack/openstack-helm
 [OpenStack]: https://www.openstack.org/ 
 [Kubernetes]: https://kubernetes.io/
+[SKT Global Blog]: https://www.globalskt.com/home/info/2313
