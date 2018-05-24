@@ -34,7 +34,7 @@ Airship 프로젝트는 다음과 같은 서브 프로젝트들로 구성되어 
 ## SKT 참여 범위
 위에서 말씀 드렸듯이, Airship의 서브 프로젝트들 중에서 SKT는 "Armada"의 개발에만 참여 하고 있습니다. 아래 그림과 같이 복잡한 마이크로 서비스 형태로 구성된 오픈스택 서비스들은 우선 OpenStack Kolla 혹은 LOCI 프로젝트를 통해서 컨테이너 이미지로 만들어집니다. 그리고, OpenStack-Helm 프로젝트를 기반으로 Kubernetes 상에 설치될 수 있는 형태로 패키징 되고, Armada는 이렇게 패키징 된 많은 서비스들을 위에서 설명한 것과 같이 선언적으로 관리하고 오케스트레이션 할 수 있도록 만들어 줍니다.
 
-![Three Main Steps for OpenStack on Kubernetes]({{ site.baseurl }}{{ post.url }}/assets/img/airship/airship_companies_v2.png)
+![Three Main Steps for OpenStack on Kubernetes]({{ site.baseurl }}{{ post.url }}/assets/img/airship/airship_sktflow.png)
 [![License: CC BY-NC-ND 4.0](https://licensebuttons.net/l/by-nc-nd/4.0/80x15.png)](https://creativecommons.org/licenses/by-nc-nd/4.0/)
 
 SKT는 오픈소스 소프트웨어 생태계를 통한 다양한 기술 협업을 기반으로 가상화 인프라 플랫폼인 TACO (SKT All Container OpenStack)를 개발하고 있으며, 사내외 여러 분야에 적용하기 위해 노력하고 있습니다. Airship의 Armada는 OpenStack-Helm과 함께 TACO의 기반이 되는 오픈소스 프로젝트이며, SKT는 계속해서 AT&T를 비롯한 다양한 글로벌 회사들과 협력하여 발전시켜 나갈 계획입니다.
