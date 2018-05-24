@@ -4,8 +4,8 @@ author: 안재석
 author-email: jay.ahn@sk.com
 description: SKT, AT&T-오픈스택 재단과 함께 손쉬운 클라우드 구축을 가속화 할 새로운 오픈 인프라 프로젝트 Airship 출범
 ---
-# AIRSHIP 런칭 
-SKT는 AT&T등과 함께 새로운 Open Infrastructure Project인 "[Airship]"를 런칭하였습니다. 그리고, 앞으로 AT&T 및 다른 참여회사들과 OpenStack Foundation과 협력하여 OpenStack의 Top-Level Project로 만들 수 있도록 노력할 계획입니다. 이번 블로그에서는 Airship 전체 프로젝트에 대해서 간략한 소개를 드리고, Airship에 포함된 여러개의 Sub-Project들 중에서 SKT가 참여하는 부분에 대해서 말씀드리도록 하겠습니다. 
+# Open Infrastructure Project, Airship 런칭 
+SKT는 AT&T등과 함께 새로운 Open Infrastructure Project인 "[Airship]"를 런칭하였습니다. 그리고, 앞으로 AT&T 및 다른 참여회사들, OpenStack Foundation과 협력하여 OpenStack의 Top-Level Project로 만들 수 있도록 노력할 계획입니다. 이번 블로그에서는 Airship 전체 프로젝트에 대해서 간략한 소개를 드리고, Airship에 포함된 여러개의 Sub-Project들 중에서 SKT가 참여하는 부분에 대해서 말씀드리도록 하겠습니다. 
 
 ![Companies participating Airship project]({{ site.baseurl }}{{ post.url }}/assets/img/airship/airship_companies_v2.png)
 [![License: CC BY-NC-ND 4.0](https://licensebuttons.net/l/by-nc-nd/4.0/80x15.png)](https://creativecommons.org/licenses/by-nc-nd/4.0/)
@@ -41,7 +41,7 @@ SKT는 오픈소스 소프트웨어 생태계를 통한 다양한 기술 협업�
 또한, 저희 기술 블로그 포스팅중에서 "TACO All-In-One 설치"를 참조하셔서, Armada를 비롯한 관련 오픈 소스 기술들을 손쉽게 다루어 볼 수 있도록 TACO All-In-One 설치 코드를 오픈 해 놓았습니다.
 
 ## 관련 정보  
-Airship과 관련된 내용은 프로젝트 홈페이지 (http://www.airshipit.org)를 통해서 더 상세히 알아보실 수 있으며, AT&T의 Innovation Blog4 를 통해서도 소식을 들으실 수 있습니다. 
+Airship과 관련된 내용은 프로젝트 홈페이지 (http://www.airshipit.org)를 통해서 더 상세히 알아보실 수 있습니다. 
 
 [Airship]: http://www.aireshipit.org
 [OpenStack-Helm]: https://github.com/openstack/openstack-helm
