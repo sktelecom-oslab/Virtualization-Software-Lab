@@ -38,8 +38,7 @@ Airship 프로젝트는 다음과 같은 서브 프로젝트들로 구성되어 
 [![License: CC BY-NC-ND 4.0](https://licensebuttons.net/l/by-nc-nd/4.0/80x15.png)](https://creativecommons.org/licenses/by-nc-nd/4.0/)
 
 SKT는 오픈소스 소프트웨어 생태계를 통한 다양한 기술 협업을 기반으로 가상화 인프라 플랫폼인 TACO (SKT All Container OpenStack)를 개발하고 있으며, 사내외 여러 분야에 적용하기 위해 노력하고 있습니다. Airship의 Armada는 OpenStack-Helm과 함께 TACO의 기반이 되는 오픈소스 프로젝트이며, SKT는 계속해서 AT&T를 비롯한 다양한 글로벌 회사들과 협력하여 발전시켜 나갈 계획입니다.
-또한, 저희 기술 블로그 포스팅중에서 "TACO All-In-One 설치"를 참조하셔서, T
-Armada를 비롯한 관련 오픈 소스 기술들을 손쉽게 다루어 볼 수 있도록 TACO All-In-One 설치 코드를 오픈 해 놓았습니다.
+또한, 저희 기술 블로그 포스팅중에서 "TACO All-In-One 설치"를 참조하셔서, Armada를 비롯한 관련 오픈 소스 기술들을 손쉽게 다루어 볼 수 있도록 TACO All-In-One 설치 코드를 오픈 해 놓았습니다.
 
 ## 관련 정보  
 Airship과 관련된 내용은 프로젝트 홈페이지 (http://www.airshipit.org)를 통해서 더 상세히 알아보실 수 있으며, AT&T의 Innovation Blog4 를 통해서도 소식을 들으실 수 있습니다. 
