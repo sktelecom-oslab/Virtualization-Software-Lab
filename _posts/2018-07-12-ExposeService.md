@@ -16,7 +16,7 @@ date:   2018-07-12 11:00:00 +0900
 지금부터 K8S 설치가 완료된 TACO 개발 환경에 Keystone을 배포하면서 위 두 가지 방법에 대해 자세히 살펴보고, 여러분의 환경에는 어떤 방법과 설정이 적합한지에 대해서도 한번 고민해 보겠습니다. 참고로, 설명에 사용된 개발 환경의 K8S 버전은 `v1.10.4`이고 kube-proxy는 `iptables` 모드로 실행했습니다. 노드는 K8S 클러스터 8대 (master x 3, ctrl x 3, com x 2), 클러스터에 포함되지 않은 deployer 노드 1대로 구성했습니다.
 
 ## Node Port
-NodePort는 이름처럼 클러스터에 속한 노드의 IP와 지정된 port를 통해 클러스터 위에 배포한 응용 서비스에 접근할 수 있게 해 주는 `서비스 리소스`의 한 종류입니다. 일단 keystone부터 설치해 보겠습니다. 먼저, 아래처럼 OpenStack Helm 차트를 이용해 keystone을 설치하는데 필요한 rabbitmq, memcached, mariadb를 초간단 모드로 배포하고, 마지막으로 keystone도 배포합니다. (TACO 설치에 대해서는 이전 포스트를 참고하시기 바랍니다.)
+NodePort는 이름처럼 클러스터에 속한 노드의 IP와 지정된 port를 통해 클러스터 위에 배포한 응용 서비스에 접근할 수 있게 해 주는 `서비스 리소스`의 한 종류입니다. 직접 사용해 보는 것이 가장 이해가 빠르겠죠? 그러기 위해서 먼저 아래처럼 OpenStack Helm 차트를 이용해 rabbitmq, memcached, mariadb를 초간단 모드로 배포하고, 마지막으로 keystone도 배포합니다. (TACO 설치에 대해서는 이전 포스트를 참고하시기 바랍니다.)
 ```
 $ helm install openstack-helm/rabbitmq \
   --namespace=openstack \
