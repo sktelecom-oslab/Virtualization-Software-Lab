@@ -1,14 +1,14 @@
 ---
 layout: post
-title:  "TACO 서비스 오픈하기"
+title:  "TACO 서비스 외부로 오픈하기"
 author: "문현선"
 date:   2018-07-12 11:00:00 +0900
 ---
 
 <p>by 문현선(<a href="mailto:hyunsun.moon@sk.com">hyunsun.moon@sk.com</a>)</p>
 
-# TACO 서비스 오픈하기
-이번 포스트에서는 TACO로 구축한 오픈스택을 외부에 서비스하는 방법에 대해 알아보겠습니다. TACO가 K8S를 이용해 오픈스택을 구축하고 운영하는 플랫폼이란 건 이제 다들 아시죠? 기본적으로 TACO는 오픈스택의 구성 요소들을 다양한 형태의 K8S 리소스로 구현하고 있는데요, 이렇게 K8S 클러스터에 배포한 응용 서비스는 특별한 설정 없이는 클러스터 내에서만 접근이 가능합니다. 때문에 외부에서 접근이 필요한 오픈스택 서비스의 API 엔드포인트들은 부가적으로 K8S가 제공하는 다음의 리소스들을 이용해 클러스터 밖에서도 접근이 가능하도록 노출시켜줘야 합니다.
+# TACO 서비스 외부로 오픈하기
+이번 포스트에서는 TACO로 구축한 오픈스택을 외부에 서비스하는 방법에 대해 알아보겠습니다. TACO가 K8S를 이용해 오픈스택을 구축하고 운영하는 플랫폼이란 건 이제 다들 아시죠? 기본적으로 TACO는 오픈스택의 구성 요소들을 다양한 형태의 K8S 리소스로 구현하고 있는데요, 이렇게 K8S 클러스터에 배포한 응용 서비스는 기본적으로 클러스터 내에서만 접근이 가능합니다. 때문에 외부에서 접근이 필요한 오픈스택 서비스의 API 엔드포인트들은 부가적으로 K8S가 제공하는 다음의 리소스들을 이용해 클러스터 밖에서도 접근이 가능하도록 노출시켜줘야 합니다.
 
 * Node Port
 * Ingress
@@ -433,14 +433,14 @@ ingress-error-pages-7cb55fcbdd-k8tbj           1/1       Running       0        
 [centos@hyunsun-deployer ~]$ curl -I http://10.10.10.254/v3 -H "Host: keystone"
 HTTP/1.1 200 OK
 ```
-그런데 pod에 문제가 생긴 것이 아니라 노드에 장애가 생긴 경우에는 어떨까요? 이 경우에도 Ingress pod가 다른 노드로 금방 옮겨 갈까요? 안타깝게도 그렇지 않습니다. K8S는 `--node-monitor-grace-period` 동안 상태 업데이트가 없는 경우에 노드가 다운됐다고 판단하고, 다시 `--pod-eviction-timeout` 동안 기다렸다가 장애가 난 노드에 존재하는 pod들을 정상적인 다른 노드로 이동시킵니다. 이 시간은 기본 설정으로 약 6분에 가깝기 때문에 서비스 장애로 이어질 수 있습니다. 그렇다고 이 시간을 짧게 단축시키면 다른 부작용이 발생할 수 있습니다. 때문에 이 VIP 기능을 제대로 사용하기 위해서는 `calico` CNI를 사용하는 경우 Ingress pod를 `DaemonSet`으로 하나 이상 띄운 다음 그림처럼 노드에서 BGP peering을 맺고 있는 앞 단의 라우터에게 BGP를 이용해 VIP 라우팅 정보를 제공하고 라우터에서 VIP에 대해 ECMP로 멀티 패스를 제공하는 것입니다.
+그런데 pod에 문제가 생긴 것이 아니라 노드에 장애가 생긴 경우에는 어떨까요? 이 경우에도 Ingress pod가 다른 노드로 금방 옮겨 갈까요? 안타깝게도 그렇지 않습니다. K8S는 `--node-monitor-grace-period` 동안 상태 업데이트가 없는 경우에 노드가 다운됐다고 판단하고, 다시 `--pod-eviction-timeout` 동안 기다렸다가 장애가 난 노드에 존재하는 pod들을 정상적인 다른 노드로 이동시킵니다. 이 시간은 기본 설정으로 약 6분에 가깝기 때문에 서비스 장애로 이어질 수 있습니다. 그렇다고 이 시간을 짧게 단축시키면 다른 부작용이 발생할 수 있습니다. 때문에 이 VIP 기능을 제대로 사용하기 위해서는 `calico` CNI를 사용하는 경우 Ingress pod를 `DaemonSet`으로 하나 이상 띄운 다음 그림처럼 노드에서 BGP peering을 맺고 있는 앞 단의 라우터에게 BGP를 이용해 VIP 라우팅 정보를 제공하고 라우터에서 VIP에 대해 ECMP로 멀티 패스를 제공하는 것입니다. 이 때, VIP는 라우팅을 통해서만 접근이 가능해야 하므로 실제 물리 링크와는 연결되지 않 dummy 인터페이스를 사용하게 됩니다.
 ```
 $ helm upgrade ingress openstack-helm/ingress \
   --namespace=openstack \
   --set monitoring.prometheus.enabled=false \
   --set network.host_namespace=true \
   --set network.vip.manage=true \
-  --set network.vip.interface=eth0 \
+  --set network.vip.interface=dummy-ingress-iface \
   --set network.vip.addr=10.10.10.254/32 \
   --set deployment.type=DaemonSet
 ```
@@ -490,7 +490,7 @@ spec:
 
 ![](https://raw.githubusercontent.com/sktelecom-oslab/Virtualization-Software-Lab/master/assets/img/july/july-img-04.jpeg)
 
-간단히 테스트 해 보겠습니다. 기존에 설치했던 Ingress는 깔끔하게 삭제하고, 아래처럼 Ingress 컨트롤러를 `cluster` 모드로 하나 `namespace` 모드로 하나 총 두 개 띄우겠습니다. VIP에 대한 라우팅 설정이 불가능한 환경에서는 `deployment.type=DaemonSet` 부분을 빼고 시험하시기 바랍니다. 배포가 완료되면 아래처럼 클러스터 밖에서 VIP로 접근이 가능한지 확인해 봅니다. 이 때, 호스트 명은 기존처럼 `keystone`만 써서는 안 되고 `keystone.openstack.svc.cluster.local`로 써 줘야 `openstack-ingress` Ingress에서 설정한 룰에 매칭이 되어 openstack 네임스페이스 전용 nginx로 요청이 전달될 수 있습니다.
+간단히 테스트 해 보겠습니다. 기존에 설치했던 Ingress는 깔끔하게 삭제하고, 아래처럼 Ingress 컨트롤러를 `cluster` 모드로 하나 `namespace` 모드로 하나 총 두 개 띄우겠습니다. VIP에 대한 라우팅 설정이 불가능한 환경에서는 `deployment.type=DaemonSet` 부분을 빼고, `vip.interface`를 물리 인터페이스로 대체하여 시험하시기 바랍니다. 배포가 완료되면 아래처럼 클러스터 밖에서 VIP로 접근이 가능한지 확인해 봅니다. 이 때, 호스트 명은 기존처럼 `keystone`만 써서는 안 되고 `keystone.openstack.svc.cluster.local`로 써 줘야 `openstack-ingress` Ingress에서 설정한 룰에 매칭이 되어 openstack 네임스페이스 전용 nginx로 요청이 전달될 수 있습니다.
 ```
 $ helm install openstack-helm/ingress \
   --namespace=kube-system \
@@ -498,7 +498,7 @@ $ helm install openstack-helm/ingress \
   --set monitoring.prometheus.enabled=false \
   --set network.host_namespace=true \
   --set network.vip.manage=true \
-  --set network.vip.interface=eth0 \
+  --set network.vip.interface=dummy-ingress-iface \
   --set network.vip.addr=10.10.10.254/32 \
   --set deployment.type=DaemonSet \
   --set deployment.mode=cluster
