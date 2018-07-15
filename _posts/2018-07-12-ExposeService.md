@@ -59,7 +59,7 @@ keystone-api                  ClusterIP   10.233.36.178   <none>        80/TCP,3
 [centos@ctrl-1 ~]$ curl -I http://10.233.11.46/v3
 HTTP/1.1 200 OK
 ```
-ClusterIP는 뜯어보면 `NAT`로 구현되어 있습니다. 클러스터 내에서 `10.233.36.178:80`를 목적지로 패킷을 보내면, 이 패킷은 `OUTPUT`, `KUBE-SERVICES`, `KUBE-SVC-BXJIHEYR7GKHDJOX` 체인을 거치면서 최종적으로는 3개의 keystone-api pod 중 <랜덤하게 선택된 pod의 IP>:80으로 DNAT 됩니다. `KUBE-SVC-BXJIHEYR7GKHDJOX` 체인은 NodePort에서도 사용되니 눈여겨 보시기 바랍니다. 참고로, 아래는 실제 iptables 룰 조회 결과의 일부만 발췌한 것입니다.
+ClusterIP는 뜯어보면 `NAT`로 구현되어 있습니다. 클러스터 내에서 `10.233.36.178:80`를 목적지로 패킷을 보내면, 이 패킷은 `OUTPUT`, `KUBE-SERVICES`, `KUBE-SVC-BXJIHEYR7GKHDJOX` 체인을 거치면서 최종적으로는 3개의 keystone-api pod 중 `<랜덤하게 선택된 pod의 IP>:80`으로 DNAT 됩니다. `KUBE-SVC-BXJIHEYR7GKHDJOX` 체인은 NodePort에서도 사용되니 눈여겨 보시기 바랍니다. 참고로, 아래는 실제 iptables 룰 조회 결과의 일부만 발췌한 것입니다.
 ```
 [centos@ctrl-1 ~]$ sudo iptables -t nat -L OUTPUT
 Chain OUTPUT (policy ACCEPT)
@@ -125,7 +125,7 @@ HTTP/1.1 200 OK
 [centos@hyunsun-deployer ~]$ curl -I http://ctrl-1:31302/v3
 HTTP/1.1 200 OK
 ```
-NodePort 역시 NAT로 구현되어 있습니다. 관련된 iptables 룰을 한번 살펴보겠습니다. 클러스터 밖에서 `<Node IP>:30500`으로 패킷을 보내면 이번에는 `KUBE-SERVICES` 체인의 마지막 룰에 해당하는 `KUBE-NODEPORTS` 체인을 타게 됩니다. `KUBE-NODEPORTS` 체인의 룰을 살펴보면, 목적지의 포트가 30500인 경우 앞서 ClusterIP에서 보았던 `KUBE-SVC-BXJIHEYR7GKHDJOX` 체인으로 이어지는 것을 확인할 수 있습니다. 즉, 3개의 kube-api pod 중 <랜덤하게 선택된 pod의 IP>:80으로 목적지의 주소가 바뀌는 것이죠.
+NodePort 역시 NAT로 구현되어 있습니다. 관련된 iptables 룰을 한번 살펴보겠습니다. 클러스터 밖에서 `<Node IP>:30500`으로 패킷을 보내면 이번에는 `KUBE-SERVICES` 체인의 마지막 룰에 해당하는 `KUBE-NODEPORTS` 체인을 타게 됩니다. `KUBE-NODEPORTS` 체인의 룰을 살펴보면, 목적지의 포트가 30500인 경우 앞서 ClusterIP에서 보았던 `KUBE-SVC-BXJIHEYR7GKHDJOX` 체인으로 이어지는 것을 확인할 수 있습니다. 즉, 3개의 kube-api pod 중 `<랜덤하게 선택된 pod의 IP>:80`으로 목적지의 주소가 바뀌는 것이죠.
 ```
 [centos@ctrl-1 ~]$ sudo iptables -t nat -L PREROUTING
 Chain PREROUTING (policy ACCEPT)
@@ -156,7 +156,7 @@ KUBE-SEP-L7QHG36UK5BTPDQX  all  --  anywhere   anywhere             /* openstack
 
 ![](https://raw.githubusercontent.com/sktelecom-oslab/Virtualization-Software-Lab/master/assets/img/july/july-img-01.jpeg)
 
-그런데 이 경우 로드 발란서가 외부로부터 유입되는 트래픽을 매우 세련된 방식으로 분산시켜 줄 것이기 때문에 노드에서 다시 3개의 keystone-api pod 중 하나를 랜덤하게 선택하는 기초적인 로드 분산 작업은 불필요해 보입니다. 예를 들어, 로드 발란서에 의해 1차적으로 `ctrl-1:30500`으로 전달 된 패킷의 2/3 가량은 다시 ctrl-2나 ctrl-3에 있는 keystone-api pod로 포워딩될 것입니다. 로컬에 keystone-api pod가 있는데도 불구하고 말이죠. 이런 불필요한 홉을 제거하기 위해서 NodePort로 들어온 패킷에 대해 무조건 로컬에 실행 중인 pod로 포워딩하는 옵션을 활성해 해 주는 것이 효과적입니다.
+그런데 이 경우 로드 발란서가 외부로부터 유입되는 트래픽을 매우 세련된 방식으로 분산시켜 줄 것이기 때문에 노드에서 다시 3개의 keystone-api pod 중 하나를 랜덤하게 선택하는 기초적인 로드 분산 작업은 불필요해 보입니다. 예를 들어, 로드 발란서에 의해 1차적으로 `ctrl-1:30500`으로 전달 된 패킷의 2/3 가량은 다시 ctrl-2나 ctrl-3에 있는 keystone-api pod로 포워딩될 것입니다. 로컬에 keystone-api pod가 있는데도 불구하고 말이죠. 이런 불필요한 홉을 제거하기 위해서 NodePort로 들어온 패킷에 대해 무조건 로컬에 실행 중인 pod로 포워딩하는 `external_policy_local` 옵션을 활성해 해 주는 것이 효과적입니다.
 ```
 $ helm upgrade keystone openstack-helm/keystone \
   --namespace=openstack \
@@ -259,7 +259,7 @@ $ helm delete --purge keystone && helm install openstack-helm/keystone \
   --set network.api.ingress.public=true \
   --set pod.replicas.api=3
 ```
-Ingress 리소스 목록을 한번 조회 해 보겠습니다. Ingress 리소스는 ingress 컨트롤러가 서비스를 제공할 대상에 해당합니다. `keystone` 그리고 `openstack-ingress`라는 이름의 Ingress가 생성되었네요. openstack-ingress는 마지막에 멀티 Ingress 부분에서 설명하기로 하고, 먼저 keystone을 한번 살펴보겠습니다. 상세 내용을 보면 호스트명이 `keystone`, `keystone.openstack`, 또는 `keystone.openstack.svc.cluster.local`로 들어오는 모든 요청을 `keystone-api` 서비스의 80 포트(ks-pub)로 보내라는 룰이 설정되어 있습니다. 참고로, Ingress 룰의 백엔드는 K8S 서비스 리소스여야 합니다. `keystone-api` 서비스는 앞서 살펴 봤던 ClusterIP 타입의 서비스입니다, 기억 나시죠? 이 룰들이 실제 nginx의 설정이 됩니다.
+Ingress 리소스 목록을 한번 조회 해 보겠습니다. Ingress 리소스는 ingress 컨트롤러가 서비스를 제공할 대상에 해당합니다. `keystone` 그리고 `openstack-ingress`라는 이름의 Ingress가 생성되었네요. openstack-ingress는 마지막에 멀티 Ingress 부분에서 설명하기로 하고, 먼저 keystone을 한번 살펴보겠습니다. 상세 내용을 보면 호스트명이 `keystone`, `keystone.openstack`, 또는 `keystone.openstack.svc.cluster.local`로 들어오는 모든 요청을 `keystone-api` 서비스의 80 포트(ks-pub)로 보내라는 룰이 설정되어 있습니다. (참고로, Ingress 룰의 백엔드는 K8S 서비스 리소스여야 합니다.) `keystone-api` 서비스는 앞서 살펴 봤던 ClusterIP 타입의 서비스입니다, 기억 나시죠? 이 룰들이 그대로 nginx의 설정이 됩니다.
 ```
 [centos@hyunsun-deployer openstack-helm]$ kubectl get ingress -n openstack
 NAME                  HOSTS                                                                                               ADDRESS   PORTS     AGE
@@ -383,7 +383,7 @@ $ helm upgrade ingress openstack-helm/ingress \
   --set network.vip.interface=eth0 \
   --set network.vip.addr=10.10.10.254/32
 ```
-업그레이드가 끝난 후 Ingress pod가 생성된 노드에서 VIP 인터페이스로 지정한 인터페이스의 전체 IP를 조회해 보면 VIP가 추가된 것을 볼 수 있습니다. nginx의 바인드 주소 또한 0.0.0.0에서 VIP로 바뀌어 보안상 좀 더 나아 보입니다. 클러스터 밖에서 VIP로 keystone 서비스에 접근하는 것도 잘 되는 군요. 
+업그레이드가 끝난 후 Ingress pod가 생성된 노드에서 VIP 인터페이스로 지정한 인터페이스의 IP를 조회해 보면 VIP가 추가된 것을 볼 수 있습니다. nginx의 바인드 주소 또한 0.0.0.0에서 VIP로 바뀌어 보안상 좀 더 나아 보입니다. 클러스터 밖에서 VIP로 keystone 서비스에 접근하는 것도 잘 되는 군요. 
 ```
 [centos@hyunsun-deployer ~]$ kubectl get po -n openstack -o wide
 NAME                                           READY     STATUS    RESTARTS   AGE       IP               NODE
@@ -407,7 +407,7 @@ tcp        0      0 10.10.10.254:443        0.0.0.0:*               LISTEN      
 [centos@hyunsun-deployer ~]$ curl -I http://10.10.10.254/v3 -H "Host: keystone"
 HTTP/1.1 200 OK
 ```
-VIP가 잘 이동하는지 보기 위해서 ctrl-3에 있던 Ingress pod를 삭제해 ctrl-1에 새로 생성되게 했습니다. VIP가 ctrl-3의 VIP 인터페이스에서 ctrl-1의 VIP 인터페이스로 잘 옮겨갔습니다. 어떻게 구현 된 걸까요? Ingress pod의 상세 정보를 보면 답을 알 수 있습니다. Ingress pod는 `ingress-vip-init`이라는 이름의 특별한 init 컨테이너를 포함하고 있는데요, 이 컨테이너는 Ingress 컨트롤러 컨테이너가 생성되기 전에 먼저 VIP 인터페이스에 VIP를 할당하는 스크립트를 실행하는 역할을 합니다. 그리고 죽습니다. `Containers` 아래 부분을 잘 보면 Ingress pod는 `ingress`와 `ingress-vip`라는 두 개의 컨테이너로 이뤄져 있는 것을 알 수 있습니다. `ingress`는 지금껏 살펴 본 Ingress 컨트롤러구요, `ingress-vip` 컨테이너의 역할은 무한히 sleep하고 있다가 pod가 삭제 될 때 `preStop` 훅으로 VIP를 VIP 인터페이스에서 제거하는 스크립트를 실행하는 것입니다. 이렇게 해서 VIP가 Ingress pod를 따라 다닐 수 있게 된 것입니다. 알고 보면 간단하죠?
+이번엔 VIP가 잘 이동하는지 시험해 보기 위해서 ctrl-3에 있던 Ingress pod를 삭제해 다른 노드에 새로 생성되게 했습니다. ctrl-1에 생성 됐군요. VIP도 ctrl-3의 VIP 인터페이스에서 ctrl-1의 VIP 인터페이스로 잘 옮겨갔습니다. 어떻게 구현 된 걸까요? Ingress pod의 상세 정보를 보면 답을 알 수 있습니다. Ingress pod는 `ingress-vip-init`이라는 이름의 특별한 init 컨테이너를 포함하고 있는데요, 이 컨테이너는 Ingress 컨트롤러 컨테이너가 생성되기 전에 먼저 VIP 인터페이스에 VIP를 할당하는 스크립트를 실행하는 역할을 합니다. 그리고 죽습니다. `Containers` 아래 부분을 잘 보면 Ingress pod는 `ingress`와 `ingress-vip`라는 두 개의 컨테이너로 이뤄져 있는 것을 알 수 있습니다. `ingress`는 지금껏 살펴 본 Ingress 컨트롤러구요, `ingress-vip` 컨테이너의 역할은 무한히 sleep하고 있다가 pod가 삭제 될 때 `preStop` 훅으로 VIP를 VIP 인터페이스에서 제거하는 스크립트를 실행하는 것입니다. 이렇게 해서 VIP가 Ingress pod를 따라 다닐 수 있게 된 것입니다. 알고 보면 간단하죠?
 ```
 [centos@hyunsun-deployer ~]$ kubectl delete po -n openstack ingress-8585b5b86b-rmblg
 [centos@hyunsun-deployer ~]$ kubectl get po -n openstack -o wide
@@ -433,7 +433,7 @@ ingress-error-pages-7cb55fcbdd-k8tbj           1/1       Running       0        
 [centos@hyunsun-deployer ~]$ curl -I http://10.10.10.254/v3 -H "Host: keystone"
 HTTP/1.1 200 OK
 ```
-그런데 pod에 문제가 생긴 것이 아니라 노드에 장애가 생긴 경우에는 어떨까요? 이 경우에도 Ingress pod가 다른 노드로 금방 옮겨 갈까요? 안타깝게도 그렇지 않습니다. K8S는 `--node-monitor-grace-period` 동안 상태 업데이트가 없는 경우에 노드가 다운됐다고 판단하고, 다시 `--pod-eviction-timeout` 동안 기다렸다가 장애가 난 노드에 존재하는 pod들을 정상적인 다른 노드로 이동시킵니다. 이 시간은 기본 설정으로 약 6분에 가깝기 때문에 서비스 장애로 이어질 수 있습니다. 그렇다고 이 시간을 짧게 단축시키면 다른 부작용이 발생할 수 있습니다. 때문에 이 VIP 기능을 제대로 사용하기 위해서는 `calico` CNI를 사용하는 경우 Ingress pod를 `DaemonSet`으로 하나 이상 띄운 다음 그림처럼 노드에서 BGP peering을 맺고 있는 앞 단의 라우터에게 BGP를 이용해 VIP 라우팅 정보를 제공하고 라우터에서 VIP에 대해 ECMP로 멀티 패스를 제공하는 것입니다. 이 때, VIP는 라우팅을 통해서만 접근이 가능해야 하므로 실제 물리 링크와는 연결되지 않 dummy 인터페이스를 사용하게 됩니다.
+그런데 pod에 문제가 생긴 것이 아니라 노드에 장애가 생긴 경우에는 어떨까요? 이 경우에도 Ingress pod가 다른 노드로 금방 옮겨 갈까요? 안타깝게도 그렇지 않습니다. K8S는 `--node-monitor-grace-period` 동안 상태 업데이트가 없는 경우에 노드가 다운됐다고 판단하고, 다시 `--pod-eviction-timeout` 동안 기다렸다가 장애가 난 노드에 존재하는 pod들을 정상적인 다른 노드로 이동시킵니다. 이 시간은 기본 설정으로 약 6분에 가깝기 때문에 서비스 장애로 이어질 수 있습니다. 그렇다고 이 시간을 짧게 단축시키면 다른 부작용이 발생할 수 있습니다. 때문에 이 VIP 기능을 제대로 사용하기 위해서는 `calico` CNI를 사용하는 경우 Ingress pod를 `DaemonSet`으로 하나 이상 띄운 다음 그림처럼 노드에서 BGP peering을 맺고 있는 앞 단의 라우터에게 BGP를 이용해 VIP 라우팅 정보를 제공하고 라우터에서 VIP에 대해 ECMP로 멀티 패스를 제공하는 것입니다. 이 때, VIP는 라우팅을 통해서만 접근이 가능해야 하므로 실제 물리 링크와는 연결되지 않은 dummy 인터페이스를 만들어 사용하게 됩니다.
 ```
 $ helm upgrade ingress openstack-helm/ingress \
   --namespace=openstack \
