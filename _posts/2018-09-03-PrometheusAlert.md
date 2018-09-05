@@ -68,7 +68,7 @@ groups:
       description: "{{ $labels.job }} Memory Usage: {{ $value }}"
 ```
 
-여기서 for 부분에 5s 를 설정한 것은, expr 부분에 명시한 조건이 발생한 후 5초 후에 알람을 발생시키겠다는 의미입니다.
+여기서 for 부분에 5s 를 설정한 것은, expr 부분에 명시한 조건이 5초 이상 발생한 경우에 알람을 발생시키겠다는 의미입니다.
 일반적으로는 좀 더 길게 설정하지만, 역시 alert 발생을 쉽게 확인하기 위해 테스트 목적으로 짧게 지정하였습니다.
 
 실제 alert message에서는 $labels.instance 는 alert이 발생한 노드명으로 치환되고, $value 는 실제 해당 metric의 값으로 치환됩니다.  이 경우에는 memory 사용량이 들어가게 됩니다.
@@ -81,7 +81,7 @@ groups:
 
 AlertManager는 Prometheus 로부터 alert를 전달받아 이를 적절한 포맷으로 가공하여 notify해주는 역할을 합니다.
 
-우선 Alertmanager 를 다운로드 받아 압축을 풉니다. 제 경우는 /root 디렉토리에서 진행하였습니다.
+우선 Alertmanager 를 다운로드 받아 압축을 풉니다. 아래 예시에서는 /root 디렉토리에서 진행하였지만 실제로는 어느 위치라도 무방합니다.
 
 ```
 cd /root
@@ -119,7 +119,7 @@ templates:
 
 각 항목에 대한 상세설명은 공식 documentation page https://prometheus.io/docs/alerting/configuration/ 를 참조하시면 됩니다.
 
-간단히 말씀드리면 제 경우는 notify할 대상으로 slack 을 선택하였고, 이를 위해 slack api URL과 slack channel명 등을 넣어주었습니다.
+간단히 말씀드리면 여기서는 notify할 대상으로 slack 을 선택하였고, 이를 위해 slack api URL과 slack channel명 등을 넣어주었습니다.
 Slack api URL은 Slack App에서 다음 메뉴로 들어가면 추가하거나 조회할 수 있습니다.
 
 ```
@@ -130,7 +130,7 @@ Administration > Manage apps > Custom Integration > Incoming Webhooks
 ![Slack Webhook2]({{ site.baseurl }}{{ post.url }}/assets/img/prom_alert/slack_webhook2.png)
 
 
-Route 의 경우는 alert 성격에 따라 각각 다른 destination 으로 alert을 전송하고자 하는 경우에 routing tree를 구성하여 사용하게 되는데, 제 경우는 단일 receiver (slack)만 사용하므로 최상위의 root route만 존재하고 하위 노드들은 [] 로 설정하였습니다.
+Route 항목은 alert 성격에 따라 각각 다른 destination 으로 alert을 전송하고자 하는 경우에 routing tree를 구성하여 사용하게 되는데, 여기서는 단일 receiver (slack)만 사용하므로 최상위의 root route만 존재하고 하위 노드들은 [] 로 설정하였습니다.
 
 하단의 template은 notification message 의 포맷을 담고 있는 template file명을 지정합니다.
 mytemp.tmpl 파일은 다음과 같이 작성하였습니다.
