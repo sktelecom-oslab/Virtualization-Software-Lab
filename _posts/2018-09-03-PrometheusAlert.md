@@ -11,6 +11,7 @@ date:   2018-09-03 11:00:00 +0900
 이번 포스팅에서는 Kubernetes 환경에서 모니터링 tool로 많이 사용되고 있는 Prometheus를 사용하여 TACO 서비스에 이벤트 발생시 Alerting해주는 부분에 대해 살펴보겠습니다. 실제 TACO에서 사용 중인 Event alerting 내용을 보여드리기보다는, 독자들의 이해를 돕기 위해 Metric 수집부터 실제 Alert notification까지의 기본적인 Flow를 Tutorial 형식으로 풀어나가려고 합니다.
 
 
+
 ## Prometheus 개요
 Prometheus는 시계열 데이터 모니터링을 수행하는 오픈소스 모니터링 솔루션입니다.
 음악 유통 플랫폼 회사인 SoundCloud라는 곳에서 시작한 프로젝트이고, 2012년 이후 여러회사에서 참여해서 발전하다가 2016년도에 Cloud Native Computing Foundation에 합류하였습니다.  Kubernetes에 이은 두번째 공식 프로젝트이죠.
@@ -28,6 +29,7 @@ Prometheus Architecture는 다음과 같습니다.
 ![Prometheus Architecture]({{ site.baseurl }}{{ post.url }}/assets/img/prom_alert/prom_architecture.png)
 
 기본적으로 exporter 들로부터 pull 방식으로 metric을 가져오며 Service Discovery 기능을 통해 Kubernetes 클러스터 등 외부 Resource들에 대한 metric도 가져오게 됩니다. 발생한 Alert은 alertmanager에게 전달하여 email이나 slack 등의 receiver로 alert 메세지를 발송합니다.
+
 
 
 ## Step by Step Guide for Alerting
@@ -53,20 +55,7 @@ rule_files:
 
 그리고 alert rule file을 다음과 같이 작성합니다.  alert 발생을 쉽게 확인하기 위해 memory 사용량 임계점 수치를 매우 낮게 설정하였습니다.
 
-```
-groups:
-- name: Memory
-  rules:
-  - alert: Memory
-    expr: node_memory_Active > 10000
-    for: 5s
-    labels:
-      severity: major
-    annotations:
-      summary: High Memory Usage on {{ $labels.instance }}
-      identifier: "{{ $labels.instance }}"
-      description: "{{ $labels.job }} Memory Usage: {{ $value }}"
-```
+![Alert Rule]({{ site.baseurl }}{{ post.url }}/assets/img/prom_alert/alert_rule.png)
 
 여기서 for 부분에 5s 를 설정한 것은, expr 부분에 명시한 조건이 5초 이상 발생한 경우에 알람을 발생시키겠다는 의미입니다.
 일반적으로는 좀 더 길게 설정하지만, 역시 alert 발생을 쉽게 확인하기 위해 테스트 목적으로 짧게 지정하였습니다.
@@ -135,27 +124,10 @@ Route 항목은 alert 성격에 따라 각각 다른 destination 으로 alert을
 하단의 template은 notification message 의 포맷을 담고 있는 template file명을 지정합니다.
 mytemp.tmpl 파일은 다음과 같이 작성하였습니다.
 
-/root/alertmanager/mytemp.tmpl
-```
-{{ define "__single_message_title" }}{{ range .Alerts.Firing }}{{ .Labels.alertname }} @ {{ .Annotations.identifier }}{{ end }}{{ range .Alerts.Resolved }}{{ .Labels.alertname }} @ {{ .Annotations.identifier }}{{ end }}{{ end }}
+- /root/alertmanager/mytemp.tmpl
 
-{{ define "custom_title" }}[{{ .Status | toUpper }}{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }}] {{ if or (and (eq (len .Alerts.Firing) 1) (eq (len .Alerts.Resolved) 0)) (and (eq (len .Alerts.Firing) 0) (eq (len .Alerts.Resolved) 1)) }}{{ template "__single_message_title" . }}{{ end }}{{ end }}
+![Notification Template]({{ site.baseurl }}{{ post.url }}/assets/img/prom_alert/mytemp.png)
 
-{{ define "custom_slack_message" }}
-{{ if or (and (eq (len .Alerts.Firing) 1) (eq (len .Alerts.Resolved) 0)) (and (eq (len .Alerts.Firing) 0) (eq (len .Alerts.Resolved) 1)) }}
-{{ range .Alerts.Firing }}{{ .Annotations.description }}{{ end }}{{ range .Alerts.Resolved }}{{ .Annotations.description }}{{ end }}
-{{ else }}
-{{ if gt (len .Alerts.Firing) 0 }}
-*Alerts Firing:*
-{{ range .Alerts.Firing }}- {{ .Annotations.identifier }}: {{ .Annotations.description }}
-{{ end }}{{ end }}
-{{ if gt (len .Alerts.Resolved) 0 }}
-*Alerts Resolved:*
-{{ range .Alerts.Resolved }}- {{ .Annotations.identifier }}: {{ .Annotations.description }}
-{{ end }}{{ end }}
-{{ end }}
-{{ end }}
-```
 - 출처: https://medium.com/quiq-blog/better-slack-alerts-from-prometheus-49125c8c672b
 
 Golang template 이라 보기가 좀 쉽지는 않지만 간단히 말씀드리면,
@@ -177,6 +149,7 @@ cd /root/alertmanager
 ![Alert Notification]({{ site.baseurl }}{{ post.url }}/assets/img/prom_alert/prom_alert_noti.png)
 
 
+
 ## Openstack 커뮤니티의 Default Alert Rules
 
 TACO의 경우 Openstack service 및 Prometheus 등의 monitoring tool들을 다음과 같은 helm chart를 이용하여 배포하고 있습니다. 
@@ -187,6 +160,7 @@ TACO의 경우 Openstack service 및 Prometheus 등의 monitoring tool들을 다
 그 중 prometheus chart를 보면 다음과 같이 수많은 alert rule들이 정의되어 있습니다. SKT도 커뮤니티에 적극적으로 참여하고 있는 만큼, 이 리스트는 커뮤니티 차원에서 계속 발전시켜 나갈 예정입니다.
 
 <https://github.com/openstack/openstack-helm-infra/blob/master/prometheus/values.yaml#L797-L1788>
+
 
 
 ## 맺음말
