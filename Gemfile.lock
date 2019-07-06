@@ -18,7 +18,7 @@ GEM
     gemoji (3.0.0)
     html-pipeline (2.7.1)
       activesupport (>= 2)
-      nokogiri (>= 1.4.5)
+      nokogiri (>= 1.8.5)
     http_parser.rb (0.6.0)
     i18n (0.9.5)
       concurrent-ruby (~> 1.0)
