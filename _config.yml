@@ -1,6 +1,6 @@
 title: Hello, We're SK Telecom Virtualization SW Lab & SW COE
 description: > # this means to ignore newlines until "baseurl:"
-  안녕하세요. 이 블로그는 SK텔레콤의 Virtualization Software Lab에서 운영하는 블로그입니다.
+  공지: 블로그가 다음 주소로 이전되었습니다. https://openinfradev.github.io/ 
 permalink: ':title/'
 baseurl: "/Virtualization-Software-Lab" # the subpath of your site, e.g. /blog
 url: "" # the base hostname & protocol for your site, e.g. http://example.com
