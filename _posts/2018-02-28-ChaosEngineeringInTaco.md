@@ -7,6 +7,8 @@ author: "이재상"
 
 <p>by 이재상(<a href="mailto:jaesang_lee@sk.com">jaesang_lee@sk.com</a>)</p>
 
+## Update on 2019.07.30 [새로운 블로그]로 이전하였습니다
+
 ## Overview
  보통 서비스 및 소프트웨어를 개발하는 경우, 최초에 기능 검증을 하거나 빠르게 개발하기 위해 하나의 서버에 모든 기능을 구현합니다. 그러나 서비스 규모가 증가한다던가 혹은 서비스 요청이 무척 많아질 것을 대비하려면 서버 한대로는 원하는 것을 이룰 수 없겠죠. 이에 서비스를 분산 배포하기 시작합니다. 예를 들어 소규모 서비스일 때는 DB서버 1대만 구축하지만, 서비스 리퀘스트가 증가한다면 복수의 DB서버로 클러스터링을 구성하는 식입니다. 이렇게 증가되는 서비스는 DB뿐만이 아닙니다. TACO의 경우 OpenStack 서비스별 API, Scheduler가 다수 실행되며 RabbitMQ, Ingress, Etcd, Open vSwitch, Memcached 등 수 많은 서비스가 분산 배포됩니다.
 
@@ -188,3 +190,5 @@ taco@ctrl01-stg:~$ kubectl logs cookiemonster-7dfdf5d77d-blscj -n cookiemonster 
 
 참고
 <b><a name="f1">[1](#a1)</a></b> 카오스 엔지니어링: http://principlesofchaos.org http://channy.creation.net/blog/1173
+
+[새로운 블로그]: https://openinfradev.github.io/

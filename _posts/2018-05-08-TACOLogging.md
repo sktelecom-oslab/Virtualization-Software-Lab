@@ -6,6 +6,8 @@ author: "임성일"
 ---
 <p>by 임성일(<a href="mailto:si.im@sk.com">si.im@sk.com</a>)</p>
 
+## Update on 2019.07.30 [새로운 블로그]로 이전하였습니다
+
 ## Overview
 
  실행 중인 애플리케이션이나 시스템의 내부 상황을 파악하는데 일반적으로 로그를 사용합니다. 특히, 로그는 문제를 디버깅하고 작업을 모니터링하는 데 유용합니다. 일반적인 응용 소프트웨어들은 다양한 로깅 메커니즘을 제공하고 있으며 TACO의 기반 소프트웨어인 오픈소스들도 각각의 로깅 기능을 제공합니다. TACO의 기반 컨테이너 엔진인 docker-engine의 경우 간단하면서 일반적으로 사용하는 logging 방식인 표준출력과 표준에러를 사용하는 로깅 기능을 제공하고 있습니다. 차상위 시스템인 kubernetes 또한 그 나름의 로깅 기능을 제공합니다.
@@ -318,7 +320,7 @@ conf:
 
 ### Federation을 위한 구축 예시
 
- Fluent-logging은 기본적으로 해당 클러스터에서 발생하는 로그에 대한 수용합니다. 따라서 모든 수집된 로그는 동일한 클러스터에서 발생된 것을 가정하고 있습니다. 경우에따라 다수의 클러스터에서 발생하는 로그를 하나의 TACO Logging에 수용하고 관리해야하는 경우 Federation 기능이 필요합니다. 이러한 구조는 다음과 같이 도식화 할수 있습니다. 
+ Fluent-logging은 기본적으로 해당 클러스터에서 발생하는 로그에 대한 수용합니다. 따라서 모든 수집된 로그는 동일한 클러스터에서 발생된 것을 가정하고 있습니다. 경우에따라 다수의 클러스터에서 발생하는 로그를 하나의 TACO Logging에 수용하고 관리해야하는 경우 Federation 기능이 필요합니다. 이러한 구조는 다음과 같이 도식화 할수 있습니다.
 
 ![Federation]({{ site.baseurl }}{{ post.url }}/assets/img/TACO-LMA-Logging_Federation.png)
 
@@ -355,4 +357,6 @@ network:
  
 ## Conclusion
  
- 본 포스트에서는 TACO에서 제공하는 Logging mechanism과 주변 기술들에 대해 상세히 기술하였습니다. 또한 환경에 따른 변경 가능성을 몇가지 예시를 통해 제시하였습니다. TACO Logging은 kubernetes 클러스터 로깅 서비스로서 kubernetes에 올라가는 서비스라면 TACO외의 다른 서비스에서도 사용 가능합니다. 이후 개발방향은 Prometheus의 AlertManager 기능 연계를 통해 수집된 로그로부터 알람을 발생시키는 기능, 다양한 로그파일을 수집하는 기능 등이 추가될 예정입니다. 관심이 있는 분들은 [Openstack Review](https://review.openstack.org/#/q/project:openstack/openstack-helm-infra)나 [Virtualization Software Lab.의 github](https://github.com/sktelecom-oslab)를 통해 협업 가능합니다. 
+ 본 포스트에서는 TACO에서 제공하는 Logging mechanism과 주변 기술들에 대해 상세히 기술하였습니다. 또한 환경에 따른 변경 가능성을 몇가지 예시를 통해 제시하였습니다. TACO Logging은 kubernetes 클러스터 로깅 서비스로서 kubernetes에 올라가는 서비스라면 TACO외의 다른 서비스에서도 사용 가능합니다. 이후 개발방향은 Prometheus의 AlertManager 기능 연계를 통해 수집된 로그로부터 알람을 발생시키는 기능, 다양한 로그파일을 수집하는 기능 등이 추가될 예정입니다. 관심이 있는 분들은 [Openstack Review](https://review.openstack.org/#/q/project:openstack/openstack-helm-infra)나 [Virtualization Software Lab.의 github](https://github.com/sktelecom-oslab)를 통해 협업 가능합니다.
+
+ [새로운 블로그]: https://openinfradev.github.io/

@@ -7,6 +7,8 @@ date:   2018-09-03 11:00:00 +0900
 
 <p>by 최태일(<a href="mailto:taeil.choi@sk.com">taeil.choi@sk.com</a>)</p>
 
+## Update on 2019.07.30 [새로운 블로그]로 이전하였습니다
+
 ## Overview
 이번 포스팅에서는 Kubernetes 환경에서 모니터링 tool로 많이 사용되고 있는 Prometheus를 사용하여 TACO 서비스에 이벤트 발생시 Alerting해주는 부분에 대해 살펴보겠습니다. 실제 TACO에서 사용 중인 Event alerting 내용을 보여드리기보다는, 독자들의 이해를 돕기 위해 Metric 수집부터 실제 Alert notification까지의 기본적인 Flow를 Tutorial 형식으로 풀어나가려고 합니다.
 
@@ -166,3 +168,6 @@ TACO의 경우 Openstack service 및 Prometheus 등의 monitoring tool들을 다
 ## 맺음말
 
 이번 포스팅에서는 Prometheus를 통해 기본적인 Node Metric을 수집하고 간단한 alert rule을 등록하여 발생한 alert을 slack으로 전달해주는 부분을 살펴보았습니다. Prometheus는 심플함과 손쉬운 사용성 등으로 인해 점차 많은 곳에서 사용되고 있고, TACO가 아닌 일반적인 클러스터 환경에서도 자유롭게 사용 가능한 Tool이므로, 각자 사용하시는 환경에 맞게 얼마든지 구성 및 다양한 응용이 가능할 것입니다. 아울러 Graphana 등 Graphical dashboard 연동을 통해 훌륭한 모니터링 환경을 제공할 수 있으므로 모니터링 tool을 고민 중이신 분들은 한번쯤 고려해보시면 좋을 것 같습니다.
+
+
+[새로운 블로그]: https://openinfradev.github.io/
