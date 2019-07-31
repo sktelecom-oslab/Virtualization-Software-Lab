@@ -9,7 +9,7 @@ site-twitter: #if your site has a twitter account, enter it here
 # Author Settings
 author: Virtualization SW Lab & SW COE
 author-img: vslab2.jpg # add your photo
-about-author: 안녕하세요. 이 블로그는 SK텔레콤의 Virtualization Software Lab에서 운영하는 블로그입니다.
+about-author: 공지: 블로그가 다음 주소로 이전되었습니다. https://openinfradev.github.io/
 social-github: sktelecom-oslab # add your Github handle
 social-email: jay.ahn@sk.com # add your Email address
 
